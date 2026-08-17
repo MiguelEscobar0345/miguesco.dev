@@ -55,7 +55,8 @@ export default defineConfig({
         "default-src 'self'",
         "img-src 'self' data:",
         "font-src 'self'",
-        "connect-src 'self'",
+        // El beacon de Cloudflare Web Analytics manda las visitas a este host.
+        "connect-src 'self' https://cloudflareinsights.com",
         "manifest-src 'self'",
         "base-uri 'none'",
         "form-action 'none'",
@@ -63,6 +64,19 @@ export default defineConfig({
         "frame-src 'none'",
         "worker-src 'none'",
       ],
+
+      /**
+       * Cloudflare inyecta su script de analítica en cada página. Es la única
+       * pieza que no sale de este dominio, y hay que nombrarla aquí o la CSP la
+       * bloquea. Los hashes de los scripts propios se siguen añadiendo solos.
+       *
+       * Si algún día prefieres cero scripts externos, quita esta sección y
+       * desactiva Web Analytics en el panel de Cloudflare: las dos cosas van
+       * juntas, dejar sólo una rompe la consola.
+       */
+      scriptDirective: {
+        resources: ["'self'", 'https://static.cloudflareinsights.com'],
+      },
     },
   },
 })
