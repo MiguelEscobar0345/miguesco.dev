@@ -324,6 +324,23 @@ if (existsSync(join(DIST, 'robots.txt'))) {
   check(13, 'robots.txt permite a los rastreadores de IA', missing.length === 0, missing.join(', '))
 }
 
+// 14 · el favicon tiene que cumplir lo que pide Google para los resultados:
+// un cuadrado múltiplo de 48. Sin eso pinta el globo genérico en vez del logo.
+if (existsSync(join(DIST, 'favicon.ico'))) {
+  const ico = await readFile(join(DIST, 'favicon.ico'))
+  const frames = []
+  const count = ico.readUInt16LE(4)
+  for (let i = 0; i < count; i += 1) {
+    frames.push(ico.readUInt8(6 + i * 16) || 256)
+  }
+  check(
+    14,
+    'favicon.ico con un cuadro de 48px o más',
+    frames.some((size) => size >= 48 && size % 48 === 0),
+    `cuadros: ${frames.join(', ')}`,
+  )
+}
+
 // 21 · cabeceras de seguridad y caché que servirá Cloudflare
 if (existsSync(join(DIST, '_headers'))) {
   const headers = await readFile(join(DIST, '_headers'), 'utf8')

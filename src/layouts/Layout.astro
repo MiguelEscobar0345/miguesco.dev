@@ -82,8 +82,15 @@ const schema = JSON.stringify(buildSchema({ lang, t, canonical, ogImage, isHome 
     <meta name="twitter:image" content={ogImage} />
     <meta name="twitter:image:alt" content={t.meta.ogImageAlt} />
 
-    <link rel="icon" href="/favicon.ico" sizes="32x32" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    {/*
+      Google exige que el favicon de los resultados sea un cuadrado múltiplo de
+      48px; si sólo encuentra uno de 32 lo descarta y pinta el globo genérico.
+      De ahí el PNG de 192 declarado explícitamente, además del .ico —que ahora
+      lleva un cuadro de 48 dentro— y del SVG, que no tiene requisito de tamaño.
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" sizes="any" />
+    <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
     <link rel="sitemap" href="/sitemap-index.xml" />
