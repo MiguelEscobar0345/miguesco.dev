@@ -1,0 +1,35 @@
+---
+interface Props {
+  id: string
+  title: string
+  lead?: string
+  /** Alterna un fondo apenas más oscuro para separar secciones sin dibujar cajas. */
+  tinted?: boolean
+}
+
+const { id, title, lead, tinted = false } = Astro.props
+const hasActions = Astro.slots.has('actions')
+---
+
+{/* El desplazamiento hasta el ancla lo resuelve `scroll-padding-top` en <html>.
+    Poner además `scroll-mt` aquí sumaría los dos y dejaría la sección medio
+    pantallazo por debajo del borde. */}
+<section id={id} class:list={[tinted && 'bg-bg-subtle']}>
+  <div class="shell py-20 sm:py-28">
+    <div class="flex flex-wrap items-end justify-between gap-6">
+      <header class="max-w-2xl">
+        <h2 class="flex items-center gap-3 text-2xl font-semibold sm:text-3xl">
+          <span aria-hidden="true" class="h-px w-7 shrink-0 bg-accent"></span>
+          {title}
+        </h2>
+        {lead && <p class="mt-5 text-base leading-relaxed text-muted">{lead}</p>}
+      </header>
+
+      {hasActions && <slot name="actions" />}
+    </div>
+
+    <div class="mt-12 sm:mt-16">
+      <slot />
+    </div>
+  </div>
+</section>

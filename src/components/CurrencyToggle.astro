@@ -1,0 +1,68 @@
+---
+import { CURRENCIES } from '../i18n/pricing'
+
+interface Props {
+  legend: string
+  label: string
+}
+
+const { legend, label } = Astro.props
+---
+
+<div
+  role="group"
+  aria-label={label}
+  class="inline-flex items-center gap-3 text-sm"
+>
+  <span class="text-muted">{legend}</span>
+  {/* Sin JavaScript el selector no haría nada; mejor no enseñar un botón muerto.
+      El precio en pesos, que es el que trae el HTML por defecto, se sigue viendo. */}
+  <noscript>
+    <style>
+      [data-currency-switch] {
+        display: none;
+      }
+    </style>
+  </noscript>
+
+  <div data-currency-switch class="inline-flex rounded-lg border border-line p-0.5">
+    {
+      CURRENCIES.map((currency) => (
+        <button
+          type="button"
+          data-currency-option={currency}
+          class="rounded-md px-3 py-1.5 text-xs font-semibold tracking-wide text-muted uppercase transition-colors hover:text-ink"
+        >
+          {currency}
+        </button>
+      ))
+    }
+  </div>
+</div>
+
+<script>
+  const root = document.documentElement
+
+  function paint(current: string) {
+    for (const button of document.querySelectorAll<HTMLButtonElement>('[data-currency-option]')) {
+      button.setAttribute('aria-pressed', String(button.dataset.currencyOption === current))
+    }
+  }
+
+  for (const button of document.querySelectorAll<HTMLButtonElement>('[data-currency-option]')) {
+    button.addEventListener('click', () => {
+      const next = button.dataset.currencyOption
+      if (next !== 'cop' && next !== 'usd') return
+      // El estado visual lo resuelve el CSS a partir de este atributo.
+      root.dataset.currency = next
+      paint(next)
+      try {
+        localStorage.setItem('currency', next)
+      } catch {
+        // Almacenamiento bloqueado: se pierde al recargar y no pasa nada.
+      }
+    })
+  }
+
+  paint(root.dataset.currency ?? 'cop')
+</script>

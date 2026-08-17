@@ -1,0 +1,42 @@
+---
+import type { Lang } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import Layout from '../layouts/Layout.astro'
+import About from './About.astro'
+import Contact from './Contact.astro'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import Hero from './Hero.astro'
+import Pricing from './Pricing.astro'
+import Projects from './Projects.astro'
+import Services from './Services.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+---
+
+{/* Las dos portadas comparten esta plantilla; lo único que cambia es el idioma. */}
+<Layout
+  title={t.meta.home.title}
+  description={t.meta.home.description}
+  lang={lang}
+  path="/"
+  isHome
+>
+  <Header lang={lang} path="/" />
+
+  <main id="main">
+    <Hero lang={lang} />
+    <Services lang={lang} />
+    <Pricing lang={lang} />
+    <Projects lang={lang} />
+    <About lang={lang} />
+    <Contact lang={lang} />
+  </main>
+
+  <Footer lang={lang} />
+</Layout>

@@ -1,0 +1,63 @@
+---
+import type { Lang } from '../consts'
+import { localizePath, useTranslations } from '../i18n/utils'
+import LangToggle from './LangToggle.astro'
+import ThemeToggle from './ThemeToggle.astro'
+
+interface Props {
+  lang: Lang
+  path: string
+}
+
+const { lang, path } = Astro.props
+const t = useTranslations(lang)
+const home = localizePath('/', lang)
+
+/**
+ * Los identificadores de las anclas son los mismos en los dos idiomas a
+ * propósito: así, al cambiar de idioma desde "Precios", caes en "Pricing"
+ * y no arriba del todo.
+ */
+const links = [
+  { hash: '#services', label: t.nav.services },
+  { hash: '#pricing', label: t.nav.pricing },
+  { hash: '#projects', label: t.nav.projects },
+  { hash: '#about', label: t.nav.about },
+  { hash: '#contact', label: t.nav.contact },
+]
+---
+
+<header
+  class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md supports-[backdrop-filter]:bg-bg/70"
+>
+  <div class="shell flex h-16 items-center justify-between gap-4">
+    <a
+      href={home}
+      class="text-base font-semibold tracking-tight transition-colors hover:text-accent"
+    >
+      migue<span class="text-accent">sco</span>
+    </a>
+
+    <nav aria-label={t.a11y.mainNav} class="hidden md:block">
+      <ul class="flex items-center gap-7 text-sm">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={`${home}${link.hash}`}
+                class="text-muted transition-colors hover:text-accent"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <LangToggle lang={lang} path={path} label={t.a11y.toggleLanguage} />
+      <ThemeToggle label={t.a11y.toggleTheme} />
+    </div>
+  </div>
+</header>

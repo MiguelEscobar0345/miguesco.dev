@@ -1,0 +1,52 @@
+---
+import type { Lang } from '../consts'
+import { CONTACT, mailtoUrl, whatsappUrl } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import BrandIcon from './BrandIcon.astro'
+import Button from './Button.astro'
+import Icon from './Icon.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+const whatsapp = whatsappUrl(t.messages.generalBody)
+const mailto = mailtoUrl(t.messages.generalSubject, t.messages.generalBody)
+---
+
+<Section id="contact" title={t.contact.title} lead={t.contact.lead}>
+  <div class="flex flex-wrap items-center gap-3">
+    <Button href={whatsapp} external newTabLabel={t.a11y.opensInNewTab}>
+      <BrandIcon name="whatsapp" class="size-4" />
+      {t.contact.whatsapp}
+    </Button>
+    <Button href={mailto} variant="secondary">
+      <Icon name="mail" class="size-4" />
+      {t.contact.email}
+    </Button>
+  </div>
+
+  {/* En texto plano además del botón: hay quien prefiere copiarlo y escribir desde su cliente. */}
+  <ul class="mt-8 space-y-1.5 font-mono text-sm text-muted">
+    <li>
+      <a href={mailto} class="transition-colors hover:text-accent">{CONTACT.email}</a>
+    </li>
+    <li>
+      <a
+        href={whatsapp}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="transition-colors hover:text-accent"
+      >
+        {CONTACT.whatsappDisplay}
+        <span class="sr-only">({t.a11y.opensInNewTab})</span>
+      </a>
+    </li>
+  </ul>
+
+  <p class="mt-8 max-w-2xl text-sm leading-relaxed text-muted">{t.contact.note}</p>
+</Section>

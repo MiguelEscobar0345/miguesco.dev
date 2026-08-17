@@ -1,0 +1,48 @@
+---
+import type { Lang } from '../consts'
+import { SERVICE_IDS, type ServiceId } from '../i18n/pricing'
+import { useTranslations } from '../i18n/utils'
+import type { IconName } from '../icons'
+import Icon from './Icon.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+const ICONS: Record<ServiceId, IconName> = {
+  landing: 'browser',
+  website: 'pages',
+  webapp: 'monitor',
+  ai: 'sparkles',
+}
+---
+
+<Section id="services" title={t.services.title} lead={t.services.lead}>
+  <ul class="grid gap-px overflow-hidden rounded-xl bg-line sm:grid-cols-2">
+    {
+      SERVICE_IDS.map((id) => {
+        const service = t.services.items[id]
+        return (
+          <li class="flex flex-col bg-bg p-6 sm:p-8">
+            <Icon name={ICONS[id]} class="size-6 text-accent" />
+            <h3 class="mt-5 text-lg font-semibold">{service.name}</h3>
+            <p class="mt-2 text-sm leading-relaxed text-muted">{service.tagline}</p>
+
+            <ul class="mt-6 space-y-2.5 text-sm">
+              {service.deliverables.map((item) => (
+                <li class="flex gap-2.5">
+                  <Icon name="check" class="mt-0.5 size-4 shrink-0 text-accent" />
+                  <span class="text-muted">{item}</span>
+                </li>
+              ))}
+            </ul>
+          </li>
+        )
+      })
+    }
+  </ul>
+</Section>

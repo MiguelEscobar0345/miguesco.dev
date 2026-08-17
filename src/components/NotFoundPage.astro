@@ -1,0 +1,44 @@
+---
+import type { Lang } from '../consts'
+import { localizePath, useTranslations } from '../i18n/utils'
+import Layout from '../layouts/Layout.astro'
+import Button from './Button.astro'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import Icon from './Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+---
+
+{/* noindex: la página existe para quien se pierde, no para que Google la liste. */}
+<Layout
+  title={t.meta.notFound.title}
+  description={t.meta.notFound.description}
+  lang={lang}
+  path="/404"
+  noindex
+>
+  <Header lang={lang} path="/404" />
+
+  <main id="main" class="shell flex min-h-[70vh] flex-col justify-center py-20">
+    <p class="font-mono text-sm text-accent">{t.notFound.code}</p>
+    <h1 class="mt-4 max-w-2xl text-3xl font-semibold sm:text-4xl">
+      {t.notFound.headline}
+    </h1>
+    <p class="mt-5 max-w-xl text-base leading-relaxed text-muted">{t.notFound.text}</p>
+
+    <div class="mt-9">
+      <Button href={localizePath('/', lang)}>
+        <Icon name="home" class="size-4" />
+        {t.notFound.cta}
+      </Button>
+    </div>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>

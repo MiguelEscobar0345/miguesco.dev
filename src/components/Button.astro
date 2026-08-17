@@ -1,0 +1,44 @@
+---
+interface Props {
+  href: string
+  variant?: 'primary' | 'secondary' | 'ghost'
+  /** Los enlaces externos abren en pestaña nueva y llevan rel de seguridad. */
+  external?: boolean
+  /**
+   * Traducción de "se abre en una pestaña nueva". Se lee sólo con lector de
+   * pantalla: quien no ve el cambio de pestaña merece que se lo avisen antes
+   * de pulsar, no después (WCAG G201).
+   */
+  newTabLabel?: string
+  class?: string
+  'aria-label'?: string
+}
+
+const {
+  href,
+  variant = 'primary',
+  external = false,
+  newTabLabel,
+  class: className = '',
+  ...rest
+} = Astro.props
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors duration-150'
+
+const variants = {
+  primary: 'bg-accent text-accent-fg hover:bg-accent-hover',
+  secondary: 'border border-line-strong text-ink hover:border-accent hover:text-accent',
+  ghost: 'text-muted hover:text-accent',
+} as const
+---
+
+<a
+  href={href}
+  class:list={[base, variants[variant], className]}
+  {...external ? { target: '_blank', rel: 'noopener noreferrer' } : {}}
+  {...rest}
+>
+  <slot />
+  {external && newTabLabel && <span class="sr-only">({newTabLabel})</span>}
+</a>

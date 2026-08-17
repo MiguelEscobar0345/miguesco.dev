@@ -1,0 +1,23 @@
+---
+import { formatDeposit, formatPrice, type ServicePrice } from '../i18n/pricing'
+
+interface Props {
+  price: ServicePrice
+  /** 'total' muestra el precio del servicio; 'deposit', el 50% del anticipo. */
+  kind?: 'total' | 'deposit'
+  class?: string
+}
+
+const { price, kind = 'total', class: className = '' } = Astro.props
+const format = kind === 'deposit' ? formatDeposit : formatPrice
+---
+
+{/*
+  Las dos monedas viajan en el HTML y el CSS enseña la que toca según
+  `data-currency` en <html>. Así el precio está en el código fuente para
+  cualquiera que lo lea —Google incluido— y cambiar de moneda no repinta nada.
+*/}
+<span class:list={['tabular', className]}>
+  <span class="price-cop">{format(price, 'cop')}</span>
+  <span class="price-usd">{format(price, 'usd')}</span>
+</span>

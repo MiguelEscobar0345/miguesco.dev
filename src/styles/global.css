@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+
+/* El tema lo controla una clase en <html>, no la preferencia del sistema,
+   porque hay un botón para cambiarlo y su decisión manda. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Onest Variable, auto-hospedada. Copiada a /public/fonts por scripts/assets.mjs
+   desde @fontsource-variable/onest, para poder precargarla con una ruta estable. */
+@font-face {
+  font-family: 'Onest Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/onest-latin-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+    U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193,
+    U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Onest Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('/fonts/onest-latin-ext-wght-normal.woff2') format('woff2-variations');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+    U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+    U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+/*
+  Un solo acento, verde. Nada de gradientes de tres colores.
+  El verde va oscuro sobre fondo claro y claro sobre fondo oscuro: es la única
+  forma de que el mismo color pase AA en los dos temas.
+  El punto de "disponible" reutiliza el acento a propósito: dos verdes distintos
+  a diez píxeles de distancia se leerían como un descuido.
+*/
+:root {
+  color-scheme: light;
+
+  --bg: #faf9f7;
+  --bg-subtle: #f1f2ef;
+  --border: #e1e3dd;
+  --border-strong: #c5c9c0;
+  --text: #161715;
+  --text-muted: #5c605a;
+  --accent: #17663a; /* 6,7:1 sobre --bg */
+  --accent-hover: #0f4f2b;
+  --accent-fg: #ffffff; /* 7,0:1 sobre --accent */
+  --available: #17663a;
+}
+
+.dark {
+  color-scheme: dark;
+
+  --bg: #0b0b0c;
+  --bg-subtle: #101210;
+  --border: #262a26;
+  --border-strong: #3d423d;
+  --text: #eceae8;
+  --text-muted: #999d97;
+  --accent: #6ee787; /* 11:1 sobre --bg */
+  --accent-hover: #8df0a3;
+  --accent-fg: #0b0b0c;
+  --available: #6ee787;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-line: var(--border);
+  --color-line-strong: var(--border-strong);
+  --color-ink: var(--text);
+  --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-accent-fg: var(--accent-fg);
+  --color-available: var(--available);
+
+  --font-sans:
+    'Onest Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono',
+    monospace;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* El header es sticky: sin esto las anclas quedan tapadas. */
+    scroll-padding-top: 5.5rem;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  /* Los números de los precios en columna, sin bailar al cambiar de moneda. */
+  :where(h1, h2, h3, .tabular) {
+    font-variant-numeric: tabular-nums;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+}
+
+@layer components {
+  /* Contenedor único de todas las secciones. */
+  .shell {
+    width: 100%;
+    max-width: 64rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  @media (width >= 40rem) {
+    .shell {
+      padding-inline: 2rem;
+    }
+  }
+}
+
+@layer utilities {
+  /* Punto clave del selector de moneda: el HTML lleva las dos cifras y el CSS
+     enseña la que toca. Cero recálculo en JavaScript, cero parpadeo. */
+  :root[data-currency='cop'] .price-usd,
+  :root[data-currency='usd'] .price-cop {
+    display: none;
+  }
+
+  /* El botón activo del selector también sale del atributo: sin JavaScript
+     no hay un instante en el que los dos parezcan apagados. */
+  :root[data-currency='cop'] [data-currency-option='cop'],
+  :root[data-currency='usd'] [data-currency-option='usd'] {
+    background-color: var(--accent);
+    color: var(--accent-fg);
+  }
+
+  .headline-fluid {
+    font-size: clamp(2.125rem, 1.35rem + 3.4vw, 3.5rem);
+    line-height: 1.08;
+  }
+}
+
+/* Quien pide menos movimiento, recibe menos movimiento. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

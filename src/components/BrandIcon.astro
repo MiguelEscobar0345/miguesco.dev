@@ -1,0 +1,20 @@
+---
+import { BRAND_PATHS, type BrandName } from '../icons'
+
+interface Props {
+  name: BrandName
+  class?: string
+}
+
+const { name, class: className = 'size-5' } = Astro.props
+---
+
+<svg
+  viewBox="0 0 24 24"
+  fill="currentColor"
+  aria-hidden="true"
+  focusable="false"
+  class={className}
+>
+  <path d={BRAND_PATHS[name]}></path>
+</svg>

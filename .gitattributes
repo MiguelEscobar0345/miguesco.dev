@@ -1,0 +1,9 @@
+# El repo se compila en Linux (Vercel) y se edita en Windows: normalizamos los
+# finales de línea para que un `git diff` no se llene de cambios fantasma.
+* text=auto eol=lf
+
+# Binarios: que git no intente tocarlos.
+*.png binary
+*.jpg binary
+*.ico binary
+*.woff2 binary

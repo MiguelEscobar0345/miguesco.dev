@@ -1,0 +1,79 @@
+---
+import { CONTACT, SITE, type Lang } from '../consts'
+import { localizePath, useTranslations } from '../i18n/utils'
+import BrandIcon from './BrandIcon.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const home = localizePath('/', lang)
+const year = new Date().getFullYear()
+
+// En móvil el header no muestra el menú, así que la navegación completa vive aquí.
+const links = [
+  { hash: '#services', label: t.nav.services },
+  { hash: '#pricing', label: t.nav.pricing },
+  { hash: '#projects', label: t.nav.projects },
+  { hash: '#about', label: t.nav.about },
+  { hash: '#contact', label: t.nav.contact },
+]
+
+const social = [
+  { href: CONTACT.github, label: t.footer.github, icon: 'github' as const },
+  { href: CONTACT.linkedin, label: t.footer.linkedin, icon: 'linkedin' as const },
+  { href: CONTACT.instagram, label: t.footer.instagram, icon: 'instagram' as const },
+]
+---
+
+<footer class="border-t border-line bg-bg-subtle">
+  <div class="shell py-12">
+    <nav aria-label={t.a11y.footerNav} class="md:hidden">
+      <ul class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
+        {
+          links.map((link) => (
+            <li>
+              <a
+                href={`${home}${link.hash}`}
+                class="text-muted transition-colors hover:text-accent"
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div
+      class="mt-8 flex flex-col gap-6 border-t border-line pt-8 md:mt-0 md:flex-row md:items-center md:justify-between md:border-t-0 md:pt-0"
+    >
+      <div>
+        <p class="text-sm font-semibold">
+          © {year} {SITE.author}
+        </p>
+        <p class="mt-1.5 text-sm text-muted">{t.footer.builtWith}</p>
+      </div>
+
+      <ul class="flex items-center gap-4">
+        {
+          social.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer me"
+                class="inline-flex size-9 items-center justify-center rounded-lg border border-line text-muted transition-colors hover:border-accent hover:text-accent"
+              >
+                <BrandIcon name={item.icon} class="size-4" />
+                <span class="sr-only">{item.label} ({t.a11y.opensInNewTab})</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,52 @@
+---
+import type { Lang } from '../consts'
+import { mailtoUrl, whatsappUrl } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import BrandIcon from './BrandIcon.astro'
+import Button from './Button.astro'
+import Icon from './Icon.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+const whatsapp = whatsappUrl(t.messages.generalBody)
+const mailto = mailtoUrl(t.messages.generalSubject, t.messages.generalBody)
+---
+
+<div class="shell pt-14 pb-20 sm:pt-24 sm:pb-28">
+  <p
+    class="inline-flex items-center gap-2 rounded-full border border-line bg-bg-subtle px-3 py-1 text-xs font-medium text-muted"
+  >
+    <span class="relative flex size-1.5" aria-hidden="true">
+      <span
+        class="absolute inline-flex size-full animate-ping rounded-full bg-available opacity-75"
+      ></span>
+      <span class="relative inline-flex size-1.5 rounded-full bg-available"></span>
+    </span>
+    {t.hero.available}
+  </p>
+
+  <p class="mt-8 text-sm font-medium text-accent">{t.hero.eyebrow}</p>
+
+  {/* El único h1 de la página. */}
+  <h1 class="headline-fluid mt-3 max-w-3xl font-semibold">{t.hero.headline}</h1>
+
+  <p class="mt-7 max-w-2xl text-lg leading-relaxed text-muted">{t.hero.intro}</p>
+
+  <div class="mt-9 flex flex-wrap items-center gap-3">
+    <Button href={whatsapp} external newTabLabel={t.a11y.opensInNewTab}>
+      <BrandIcon name="whatsapp" class="size-4" />
+      {t.hero.ctaPrimary}
+    </Button>
+    <Button href={mailto} variant="secondary">
+      <Icon name="mail" class="size-4" />
+      {t.hero.ctaSecondary}
+    </Button>
+  </div>
+
+  <p class="mt-6 text-sm text-muted">{t.hero.responseNote}</p>
+</div>

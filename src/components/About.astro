@@ -1,0 +1,36 @@
+---
+import type { Lang } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import { STACK } from '../projects'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+---
+
+<Section id="about" title={t.about.title} tinted>
+  <div class="grid gap-12 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-16">
+    <div class="space-y-5 text-base leading-relaxed text-muted">
+      {t.about.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+    </div>
+
+    <div>
+      <h3 class="text-sm font-semibold tracking-wide text-ink uppercase">
+        {t.about.stackTitle}
+      </h3>
+      <ul class="mt-5 flex flex-wrap gap-2">
+        {
+          STACK.map((tech) => (
+            <li class="rounded-md border border-line bg-bg px-2.5 py-1 font-mono text-xs text-muted">
+              {tech}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</Section>

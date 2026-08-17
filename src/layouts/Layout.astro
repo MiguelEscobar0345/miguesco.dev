@@ -1,0 +1,129 @@
+---
+import '../styles/global.css'
+
+import { LOCALE_TAG, OG_LOCALE, SITE, type Lang } from '../consts'
+import { OTHER_LANG, localizePath, useTranslations } from '../i18n/utils'
+import { buildSchema } from '../schema'
+
+interface Props {
+  /** Obligatorio a propósito: sin esto no compila, y así no hay dos páginas con el mismo título. */
+  title: string
+  /** Obligatorio por lo mismo. */
+  description: string
+  lang: Lang
+  /** Ruta sin prefijo de idioma: '/' o '/404'. De aquí salen canonical y hreflang. */
+  path: string
+  isHome?: boolean
+  noindex?: boolean
+}
+
+const { title, description, lang, path, isHome = false, noindex = false } = Astro.props
+
+const t = useTranslations(lang)
+const other = OTHER_LANG[lang]
+
+const canonical = new URL(localizePath(path, lang), SITE.url).href
+const alternates = [
+  { hreflang: LOCALE_TAG.es, href: new URL(localizePath(path, 'es'), SITE.url).href },
+  { hreflang: LOCALE_TAG.en, href: new URL(localizePath(path, 'en'), SITE.url).href },
+  { hreflang: 'x-default', href: new URL(localizePath(path, 'es'), SITE.url).href },
+]
+
+const ogImage = new URL(lang === 'es' ? '/og.png' : '/og-en.png', SITE.url).href
+
+/**
+ * Un `</script>` dentro de una cadena del JSON cerraría la etiqueta antes de
+ * tiempo y volcaría el resto como HTML. Hoy ningún texto lo contiene, pero el
+ * día que alguien escriba sobre etiquetas en una descripción, no quiero que la
+ * página se rompa por eso.
+ */
+const schema = JSON.stringify(buildSchema({ lang, t, canonical, ogImage, isHome })).replaceAll(
+  '<',
+  '\\u003c',
+)
+---
+
+<!doctype html>
+<html lang={LOCALE_TAG[lang]} dir="ltr" class="dark" data-currency="cop">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {
+      alternates.map((alt) => (
+        <link rel="alternate" hreflang={alt.hreflang} href={alt.href} />
+      ))
+    }
+
+    <meta name="author" content={SITE.author} />
+    <meta name="generator" content={Astro.generator} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={OG_LOCALE[lang]} />
+    <meta property="og:locale:alternate" content={OG_LOCALE[other]} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={t.meta.ogImageAlt} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={t.meta.ogImageAlt} />
+
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <meta name="theme-color" content="#faf9f7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0c" media="(prefers-color-scheme: dark)" />
+
+    <link
+      rel="preload"
+      href="/fonts/onest-latin-wght-normal.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+
+    <script type="application/ld+json" set:html={schema} is:inline />
+
+    {/* Antes de pintar nada: si no, el tema guardado llega tarde y se ve el flash. */}
+    <script is:inline>
+      ;(() => {
+        const root = document.documentElement
+        try {
+          const theme = localStorage.getItem('theme')
+          root.classList.toggle('dark', theme !== 'light')
+          const currency = localStorage.getItem('currency')
+          if (currency === 'usd' || currency === 'cop') root.dataset.currency = currency
+        } catch {
+          /* Modo incógnito con almacenamiento bloqueado: nos quedamos con el tema por defecto. */
+        }
+      })()
+    </script>
+  </head>
+
+  <body class="min-h-dvh bg-bg text-ink antialiased">
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-50 focus:rounded-md focus:bg-accent focus:px-4 focus:py-2 focus:text-sm focus:font-semibold focus:text-accent-fg"
+    >
+      {t.a11y.skipToContent}
+    </a>
+    <slot />
+  </body>
+</html>

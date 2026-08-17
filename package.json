@@ -1,0 +1,35 @@
+{
+  "name": "miguesco",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Portfolio y landing de servicios de Miguel Escobar — desarrollo web, web apps e IA aplicada.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "assets": "node scripts/assets.mjs",
+    "shots": "node scripts/shots.mjs",
+    "audit": "node scripts/audit.mjs",
+    "verify": "astro build && node scripts/audit.mjs",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.3",
+    "@fontsource-variable/onest": "^5.3.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.2",
+    "sharp": "^0.34.4",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "node-html-parser": "^9.0.1",
+    "playwright": "^1.56.0",
+    "typescript": "^6.0.3"
+  }
+}

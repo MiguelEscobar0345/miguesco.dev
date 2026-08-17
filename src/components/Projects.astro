@@ -1,0 +1,41 @@
+---
+import type { ImageMetadata } from 'astro'
+
+import type { Lang } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import { PROJECTS, PROJECT_IDS, type ProjectId } from '../projects'
+import ProjectCard from './ProjectCard.astro'
+import Section from './Section.astro'
+
+import meatmos from '../assets/projects/meatmos.png'
+import mepulse from '../assets/projects/mepulse.png'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+// Importadas de forma estática para que Astro las optimice en el build.
+const IMAGES: Record<ProjectId, ImageMetadata> = { mepulse, meatmos }
+---
+
+<Section id="projects" title={t.projects.title} lead={t.projects.lead}>
+  <div class="grid gap-6 lg:grid-cols-2">
+    {
+      PROJECT_IDS.map((id) => (
+        <ProjectCard
+          project={PROJECTS[id]}
+          copy={t.projects.items[id]}
+          image={IMAGES[id]}
+          labels={{
+            demo: t.projects.viewDemo,
+            code: t.projects.viewCode,
+            newTab: t.a11y.opensInNewTab,
+          }}
+        />
+      ))
+    }
+  </div>
+</Section>

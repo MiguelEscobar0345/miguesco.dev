@@ -1,0 +1,97 @@
+---
+import type { Lang } from '../consts'
+import { whatsappUrl } from '../consts'
+import { PRICING, SERVICE_IDS } from '../i18n/pricing'
+import { useTranslations } from '../i18n/utils'
+import Button from './Button.astro'
+import CurrencyToggle from './CurrencyToggle.astro'
+import Icon from './Icon.astro'
+import Price from './Price.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+---
+
+<Section id="pricing" title={t.pricing.title} lead={t.pricing.lead} tinted>
+  <CurrencyToggle
+    slot="actions"
+    legend={t.pricing.currencyLabel}
+    label={t.a11y.toggleCurrency}
+  />
+
+  <ul class="grid gap-5 sm:grid-cols-2">
+    {
+      SERVICE_IDS.map((id) => {
+        const price = PRICING[id]
+        const service = t.services.items[id]
+        const cta = price.from ? t.pricing.ctaQuote : t.pricing.ctaBook
+        const message = price.from
+          ? t.messages.quoteBody(service.name)
+          : t.messages.bookBody(service.name)
+
+        return (
+          <li class="flex flex-col rounded-xl border border-line bg-bg p-6 sm:p-7">
+            <h3 class="text-base font-semibold">{service.name}</h3>
+
+            <p class="mt-4 flex flex-wrap items-baseline gap-x-2">
+              {price.from && <span class="text-sm text-muted">{t.pricing.from}</span>}
+              <Price price={price} class="text-2xl font-semibold sm:text-3xl" />
+            </p>
+
+            <dl class="mt-6 space-y-3 border-t border-line pt-6 text-sm">
+              <div class="flex items-center gap-2.5">
+                <Icon name="clock" class="size-4 shrink-0 text-accent" />
+                <dt class="sr-only">{t.pricing.timelineLabel}</dt>
+                <dd class="text-muted">{service.timeline}</dd>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <Icon name="loop" class="size-4 shrink-0 text-accent" />
+                <dt class="sr-only">{t.pricing.revisionsLabel}</dt>
+                <dd class="text-muted">{service.revisions}</dd>
+              </div>
+              <div class="flex items-center gap-2.5">
+                <Icon name="card" class="size-4 shrink-0 text-accent" />
+                <dt class="sr-only">{t.pricing.depositLabel}</dt>
+                <dd class="text-muted">
+                  {t.pricing.depositLabel}
+                  {' '}
+                  <Price price={price} kind="deposit" class="font-medium text-ink" />
+                </dd>
+              </div>
+            </dl>
+
+            {/* mt-auto en el envoltorio: los botones de las cuatro tarjetas
+                quedan alineados aunque un servicio ocupe dos líneas más. */}
+            <div class="mt-auto pt-7">
+              <Button
+                href={whatsappUrl(message)}
+                external
+                newTabLabel={t.a11y.opensInNewTab}
+                variant="secondary"
+                class="w-full"
+              >
+                {cta}
+              </Button>
+            </div>
+          </li>
+        )
+      })
+    }
+  </ul>
+
+  <ul class="mt-10 max-w-2xl space-y-3 text-sm leading-relaxed text-muted">
+    {
+      t.pricing.notes.map((note) => (
+        <li class="flex gap-2.5">
+          <span aria-hidden="true" class="mt-2.5 size-1 shrink-0 rounded-full bg-accent" />
+          <span>{note}</span>
+        </li>
+      ))
+    }
+  </ul>
+</Section>
