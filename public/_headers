@@ -1,0 +1,22 @@
+# Cabeceras que sirve Cloudflare. Este archivo se copia tal cual a dist/.
+#
+# La Content-Security-Policy completa la pone Astro en un <meta> con los hashes
+# de cada script y estilo en línea (ver `security.csp` en astro.config.mjs).
+# Aquí sólo va `frame-ancestors`, que una etiqueta <meta> no puede aplicar.
+
+/*
+  Content-Security-Policy: frame-ancestors 'none'
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Cross-Origin-Opener-Policy: same-origin
+  Permissions-Policy: accelerometer=(), autoplay=(), camera=(), display-capture=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+# Estos llevan hash en el nombre: si cambia el contenido, cambia la URL.
+# Se pueden cachear para siempre sin miedo.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable

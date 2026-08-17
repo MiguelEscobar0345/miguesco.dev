@@ -16,6 +16,7 @@
     "shots": "node scripts/shots.mjs",
     "audit": "node scripts/audit.mjs",
     "verify": "astro build && node scripts/audit.mjs",
+    "deploy": "astro build && node scripts/audit.mjs && wrangler deploy",
     "astro": "astro"
   },
   "dependencies": {
@@ -30,6 +31,7 @@
     "@astrojs/check": "^0.9.10",
     "node-html-parser": "^9.0.1",
     "playwright": "^1.56.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "wrangler": "^4.123.0"
   }
 }

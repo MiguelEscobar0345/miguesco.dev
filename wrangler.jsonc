@@ -1,0 +1,30 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "miguesco",
+  "compatibility_date": "2026-08-16",
+
+  /**
+   * El sitio es estático: no hay código de Worker, sólo los archivos de dist/.
+   * Cloudflare los sirve directamente desde su red, sin que se ejecute nada.
+   */
+  "assets": {
+    "directory": "./dist",
+
+    /**
+     * Ante una ruta que no existe, devuelve dist/404.html con código 404.
+     * Sin esto, Cloudflare respondería con su propia página de error genérica.
+     */
+    "not_found_handling": "404-page",
+
+    /**
+     * Astro genera directorios con index.html (/en/ → /en/index.html) y las
+     * URLs canónicas no llevan barra final. Con "auto_trailing_slash" las dos
+     * formas resuelven al mismo archivo en vez de dar un 404.
+     */
+    "html_handling": "auto-trailing-slash"
+  },
+
+  "observability": {
+    "enabled": true
+  }
+}

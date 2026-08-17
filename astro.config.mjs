@@ -38,4 +38,31 @@ export default defineConfig({
     // Un solo archivo CSS en lugar de uno por página: menos peticiones.
     inlineStylesheets: 'auto',
   },
+
+  security: {
+    /**
+     * El sitio no carga nada de fuera —ni fuentes, ni analítica, ni CDNs—, así
+     * que la política puede ser de las estrictas de verdad. Astro calcula el
+     * hash de cada script y estilo en línea, de modo que no hace falta abrir la
+     * mano con 'unsafe-inline'.
+     *
+     * `frame-ancestors` no funciona en una etiqueta <meta>; ese va como
+     * cabecera HTTP en public/_headers.
+     */
+    csp: {
+      algorithm: 'SHA-384',
+      directives: [
+        "default-src 'self'",
+        "img-src 'self' data:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "manifest-src 'self'",
+        "base-uri 'none'",
+        "form-action 'none'",
+        "object-src 'none'",
+        "frame-src 'none'",
+        "worker-src 'none'",
+      ],
+    },
+  },
 })

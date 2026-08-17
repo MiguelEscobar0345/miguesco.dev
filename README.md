@@ -29,7 +29,8 @@ npm run dev
 | `npm run dev` | Servidor de desarrollo en http://localhost:4321 |
 | `npm run build` | Genera el sitio estático en `dist/` |
 | `npm run preview` | Sirve `dist/` tal cual se va a publicar |
-| `npm run verify` | `build` + auditoría de los 20 puntos |
+| `npm run verify` | `build` + auditoría |
+| `npm run deploy` | `build` + auditoría + publicar en Cloudflare |
 | `npm run audit` | Sólo la auditoría, sobre el `dist/` que ya exista |
 | `npm run assets` | Regenera tipografías, favicons y manifiesto |
 | `npm run shots` | Recaptura los proyectos y las imágenes de Open Graph |
@@ -43,6 +44,8 @@ npm run dev
 | Textos en español | `src/i18n/es.ts` |
 | Textos en inglés | `src/i18n/en.ts` |
 | WhatsApp, correo, redes, dominio | `src/consts.ts` |
+| Cabeceras de seguridad y caché | `public/_headers` |
+| Configuración de Cloudflare | `wrangler.jsonc` |
 | Proyectos (enlaces, stack) | `src/projects.ts` |
 | Colores y tipografía | `src/styles/global.css` |
 
@@ -55,29 +58,73 @@ los dos archivos implementan la misma interfaz (`src/i18n/types.ts`).
 tener: un solo `<h1>` por página, títulos y descripciones únicos, `canonical`,
 `hreflang`, `og:image` con dimensiones, `lang`, `alt` en todas las imágenes,
 `404.html`, `sitemap-index.xml`, `robots.txt` con los rastreadores de IA
-permitidos, `llms.txt`, cero source maps, presupuesto de JavaScript por debajo
-de 10 KB y precios del JSON-LD coherentes con los que se ven en pantalla.
+permitidos, `llms.txt`, cero source maps, cabeceras de seguridad, CSP con hashes
+y sin `unsafe-inline`, presupuesto de JavaScript por debajo de 10 KB y precios
+del JSON-LD coherentes con los que se ven en pantalla.
 
-Sale con código 1 si algo falla, así que sirve tal cual como paso de CI.
+Sale con código 1 si algo falla, así que sirve tal cual como paso de CI, y
+`npm run deploy` no publica si la auditoría no pasa.
 
 Lo único que no comprueba el script son los errores de consola: para eso,
 `npm run preview` y abre las herramientas de desarrollo.
 
-## Publicar
+## Publicar en Cloudflare
 
-1. **Compra el dominio.** El sitio está configurado para `miguesco.dev`
-   (`SITE.url` en `src/consts.ts`). Si eliges otro, cámbialo ahí: de ese valor
-   salen el `canonical`, el `sitemap` y las URLs de las imágenes sociales.
-2. **Sube el repositorio a GitHub.**
-3. **Importa el proyecto en Vercel.** Detecta Astro solo. Comprueba que la
-   versión de Node del proyecto sea la 22 en *Settings → General → Node.js Version*.
-4. **Conecta el dominio** en *Settings → Domains* y apunta los DNS.
-5. Da de alta el sitio en [Google Search Console](https://search.google.com/search-console)
-   y envía `https://tudominio/sitemap-index.xml`.
+El dominio está registrado en Cloudflare, así que el sitio va en la misma casa:
+no hay que tocar un solo registro DNS para conectarlo.
 
-Mientras no tengas dominio, el sitio funcionará igual en la URL de `*.vercel.app`,
-pero el `canonical` seguirá apuntando a `miguesco.dev`. No lo publiques en serio
-hasta tener el dominio, o corrígelo antes en `src/consts.ts`.
+### 1. Crear el proyecto
+
+*Workers & Pages → Create → Connect to Git →* `MiguelEscobar0345/miguesco.dev`.
+
+| Campo | Valor |
+| --- | --- |
+| Build command | `npm run build` |
+| Deploy command | `npx wrangler deploy` |
+| Output directory | `dist` |
+
+La versión de Node la coge del `.nvmrc` (22.15.1). Si el build falla por eso,
+añade la variable de entorno `NODE_VERSION=22.15.1`.
+
+Para publicar a mano desde tu equipo, sin pasar por Git: `npm run deploy`.
+
+### 2. Conectar el dominio
+
+En el Worker, *Settings → Domains & Routes → Add → Custom domain →*
+`miguesco.dev`. Como el dominio está en la misma cuenta, Cloudflare crea el
+registro y emite el certificado solo.
+
+### 3. Redirigir el www al dominio pelado
+
+*Rules → Redirect Rules → Create rule*: si el `Hostname` es
+`www.miguesco.dev`, redirige a `https://miguesco.dev/${http.request.uri.path}`
+con un **301**. Sin esto tendrías el sitio duplicado en dos direcciones y Google
+lo nota.
+
+### 4. Correo con el dominio
+
+*Email → Email Routing → Get started.* Cloudflare añade solo los registros MX y
+el SPF. Después, en *Routing rules*, crea `hola@miguesco.dev` y reenvíalo a tu
+Gmail. Es gratis y sigues leyendo y respondiendo desde donde siempre.
+
+Es la dirección que ya muestra la web (`CONTACT.email` en `src/consts.ts`).
+
+**Añade también un DMARC**, o cualquiera puede mandar correos falsos en tu
+nombre. En *DNS → Records*, un registro TXT:
+
+| Nombre | Contenido |
+| --- | --- |
+| `_dmarc` | `v=DMARC1; p=reject; rua=mailto:hola@miguesco.dev` |
+
+`p=reject` es lo correcto mientras el dominio sólo *reciba* correo. El día que
+configures Gmail para *enviar* desde `hola@miguesco.dev`, hay que añadir antes
+`include:_spf.google.com` al SPF o tus propios correos acabarán en spam.
+
+### 5. Avisar a Google
+
+Da de alta el sitio en [Google Search Console](https://search.google.com/search-console),
+verifícalo con el registro TXT que te dé, y envía
+`https://miguesco.dev/sitemap-index.xml`.
 
 ## Detalles que conviene saber
 
@@ -93,3 +140,11 @@ hasta tener el dominio, o corrígelo antes en `src/consts.ts`.
   son scripts sueltos de unas quince líneas. El de moneda se apoya en el atributo
   `data-currency` del `<html>` y deja que el CSS elija qué precio enseñar, así que
   las dos monedas están siempre en el HTML servido.
+- **La CSP es estricta de verdad.** El sitio no pide nada a ningún servidor ajeno
+  —ni fuentes, ni analítica, ni CDNs—, así que la política es `default-src 'self'`
+  sin `unsafe-inline`: Astro calcula el hash de cada script y estilo en línea
+  (`security.csp` en `astro.config.mjs`). Si algún día añades algo externo, habrá
+  que abrirle la puerta ahí o la consola lo bloqueará.
+- **`frame-ancestors` va aparte.** Una etiqueta `<meta>` no puede aplicarla, así
+  que esa y el resto de cabeceras de seguridad viven en `public/_headers`, que
+  Cloudflare lee del `dist/`.

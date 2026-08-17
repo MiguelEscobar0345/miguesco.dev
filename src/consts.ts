@@ -21,7 +21,11 @@ export const SITE = {
 } as const
 
 export const CONTACT = {
-  email: 'miguelescobarp03@gmail.com',
+  /**
+   * Va por Cloudflare Email Routing, que reenvía a la bandeja de Gmail de
+   * siempre. En una página que publica precios, un @gmail.com resta.
+   */
+  email: 'hola@miguesco.dev',
   /** Formato internacional sin signos, tal y como lo quiere wa.me */
   whatsapp: '573151569787',
   whatsappDisplay: '+57 315 156 9787',

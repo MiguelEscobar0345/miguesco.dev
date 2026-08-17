@@ -48,6 +48,7 @@ const PAGES = [
 ]
 
 const REQUIRED_FILES = [
+  '_headers',
   'robots.txt',
   'llms.txt',
   'sitemap-index.xml',
@@ -90,7 +91,7 @@ const allFiles = await walk(DIST)
 const rel = (file) => relative(DIST, file).replaceAll('\\', '/')
 
 // ── Archivos que tienen que existir ────────────────────────────────────────
-const points = { 'robots.txt': 13, 'llms.txt': 12, 'sitemap-index.xml': 15 }
+const points = { 'robots.txt': 13, 'llms.txt': 12, 'sitemap-index.xml': 15, _headers: 21 }
 for (const file of REQUIRED_FILES) {
   const point = points[file] ?? (file.startsWith('og') ? 7 : 14)
   check(point, `existe ${file}`, existsSync(join(DIST, file)))
@@ -188,6 +189,23 @@ for (const page of PAGES) {
   if (page.noindex) {
     check(3, at('noindex'), (meta('meta[name="robots"]') ?? '').includes('noindex'))
   }
+
+  // 21 · CSP con hashes en cada página, sin abrir la mano con 'unsafe-inline'.
+  // Astro escribe el http-equiv en minúsculas, y los selectores CSS distinguen
+  // mayúsculas en el valor de un atributo: hay que comparar a mano.
+  const csp =
+    doc
+      .querySelectorAll('meta[http-equiv]')
+      .find((node) => node.getAttribute('http-equiv')?.toLowerCase() === 'content-security-policy')
+      ?.getAttribute('content') ?? ''
+
+  check(21, at('CSP presente'), csp.includes("default-src 'self'"), csp ? '' : 'ausente')
+  check(
+    21,
+    at('CSP sin unsafe-inline / unsafe-eval'),
+    csp !== '' && !csp.includes('unsafe-inline') && !csp.includes('unsafe-eval'),
+  )
+  check(21, at('CSP con hashes de scripts y estilos'), /script-src[^;]*'sha\d{3}-/.test(csp) && /style-src[^;]*'sha\d{3}-/.test(csp))
 
   // 8 · datos estructurados válidos y coherentes con los precios visibles
   const ld = doc.querySelector('script[type="application/ld+json"]')?.text ?? ''
@@ -287,6 +305,25 @@ if (existsSync(join(DIST, 'robots.txt'))) {
   check(13, 'robots.txt no bloquea el sitio', !/^Disallow:\s*\/\s*$/m.test(robots))
   const missing = AI_BOTS.filter((bot) => !robots.includes(bot))
   check(13, 'robots.txt permite a los rastreadores de IA', missing.length === 0, missing.join(', '))
+}
+
+// 21 · cabeceras de seguridad y caché que servirá Cloudflare
+if (existsSync(join(DIST, '_headers'))) {
+  const headers = await readFile(join(DIST, '_headers'), 'utf8')
+  const required = [
+    'Strict-Transport-Security',
+    'X-Content-Type-Options',
+    'Referrer-Policy',
+    'Permissions-Policy',
+    "frame-ancestors 'none'",
+  ]
+  const missing = required.filter((header) => !headers.includes(header))
+  check(21, 'cabeceras de seguridad', missing.length === 0, missing.join(', '))
+  check(
+    21,
+    'caché eterna para los assets con hash',
+    /\/_astro\/\*[\s\S]*?max-age=31536000, immutable/.test(headers),
+  )
 }
 
 // 12 · llms.txt con contenido de verdad
