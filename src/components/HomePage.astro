@@ -3,6 +3,7 @@ import type { Lang } from '../consts'
 import { useTranslations } from '../i18n/utils'
 import Layout from '../layouts/Layout.astro'
 import About from './About.astro'
+import Cases from './Cases.astro'
 import Contact from './Contact.astro'
 import Footer from './Footer.astro'
 import Header from './Header.astro'
@@ -33,6 +34,9 @@ const t = useTranslations(lang)
     <Hero lang={lang} />
     <Services lang={lang} />
     <Pricing lang={lang} />
+    {/* Va justo después de los precios: quien acaba de ver una cifra quiere
+        saber a continuación qué recibe alguien que la pagó. */}
+    <Cases lang={lang} />
     <Projects lang={lang} />
     <About lang={lang} />
     <Contact lang={lang} />

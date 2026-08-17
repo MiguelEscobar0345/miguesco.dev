@@ -1,0 +1,32 @@
+---
+import type { Lang } from '../consts'
+import { publishedCases } from '../cases'
+import { useTranslations } from '../i18n/utils'
+import CaseCard from './CaseCard.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const cases = await publishedCases(lang)
+---
+
+{/*
+  Mientras no haya ni un caso publicado, la sección no existe. Una sección
+  "Casos" vacía o con un "próximamente" dice justo lo contrario de lo que
+  queremos que diga.
+*/}
+{
+  cases.length > 0 && (
+    <Section id="cases" title={t.cases.title} lead={t.cases.lead}>
+      <div class="grid gap-6 md:grid-cols-2">
+        {cases.map((entry) => (
+          <CaseCard entry={entry} lang={lang} />
+        ))}
+      </div>
+    </Section>
+  )
+}

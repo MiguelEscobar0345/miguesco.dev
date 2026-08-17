@@ -1,0 +1,17 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import { caseSlug, publishedCases } from '../../cases'
+import CasePage from '../../components/CasePage.astro'
+
+export const getStaticPaths = (async () => {
+  const cases = await publishedCases('es')
+  return cases.map((entry) => ({ params: { slug: caseSlug(entry) }, props: { entry } }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { entry } = Astro.props
+---
+
+<CasePage entry={entry} lang="es" />

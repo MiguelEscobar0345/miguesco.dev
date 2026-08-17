@@ -36,16 +36,26 @@ if (!SITE_URL) {
 }
 
 /**
- * Astro deja la 404 del idioma por defecto en `dist/404.html` —que es el
- * archivo que sirven Vercel y compañía cuando una ruta no existe— y la inglesa
- * como una página normal en `dist/en/404/`.
+ * Las páginas no se listan a mano: se descubren en `dist/`. Así, el día que
+ * publiques un caso de estudio, su página entra en la auditoría sola en vez de
+ * quedarse fuera sin que nadie se dé cuenta.
+ *
+ * De cada archivo se deduce el idioma (por el prefijo `en/`) y la ruta canónica
+ * que le corresponde. Astro deja la 404 del idioma por defecto en
+ * `dist/404.html` —que es la que sirve el hosting ante una ruta desconocida— y
+ * la inglesa como página normal en `dist/en/404/`.
  */
-const PAGES = [
-  { file: 'index.html', lang: 'es-CO', path: '/' },
-  { file: 'en/index.html', lang: 'en', path: '/en/' },
-  { file: '404.html', lang: 'es-CO', path: '/404', noindex: true },
-  { file: 'en/404/index.html', lang: 'en', path: '/en/404', noindex: true },
-]
+function describePage(file) {
+  const isEnglish = file === 'en/index.html' || file.startsWith('en/')
+  const lang = isEnglish ? 'en' : 'es-CO'
+
+  let path = `/${file}`
+    .replace(/\/index\.html$/, '/')
+    .replace(/\.html$/, '')
+  if (path !== '/' && path !== '/en/' && path.endsWith('/')) path = path.slice(0, -1)
+
+  return { file, lang, path, noindex: /(^|\/)404(\/|$)/.test(path) }
+}
 
 const REQUIRED_FILES = [
   '_headers',
@@ -98,6 +108,13 @@ for (const file of REQUIRED_FILES) {
 }
 check(3, 'existe 404.html', existsSync(join(DIST, '404.html')))
 check(3, 'existe en/404/', existsSync(join(DIST, 'en', '404', 'index.html')))
+
+const PAGES = allFiles
+  .filter((file) => file.endsWith('.html'))
+  .map((file) => describePage(rel(file)))
+  .sort((a, b) => a.file.localeCompare(b.file))
+
+check(2, 'páginas encontradas en dist', PAGES.length >= 4, PAGES.map((p) => p.path).join('  '))
 
 // ── Páginas ────────────────────────────────────────────────────────────────
 const titles = new Map()
@@ -182,7 +199,7 @@ for (const page of PAGES) {
 
   // 2 · el HTML servido trae el contenido, no una cáscara vacía
   const mainText = (doc.querySelector('main')?.text ?? '').replace(/\s+/g, ' ').trim()
-  const floor = page.noindex ? 80 : 2000
+  const floor = page.noindex ? 80 : page.path === '/' || page.path === '/en/' ? 2000 : 600
   check(2, at('contenido en el HTML'), mainText.length >= floor, `${mainText.length} caracteres en <main>`)
 
   // 3 · la 404 no debe indexarse

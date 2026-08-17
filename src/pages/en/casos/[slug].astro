@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import { caseSlug, publishedCases } from '../../../cases'
+import CasePage from '../../../components/CasePage.astro'
+
+/**
+ * El segmento se queda en «casos» también en inglés, igual que los anclas de
+ * las secciones: así el selector de idioma puede saltar de una versión a otra
+ * cambiando sólo el prefijo, sin una tabla de traducción de rutas.
+ */
+export const getStaticPaths = (async () => {
+  const cases = await publishedCases('en')
+  return cases.map((entry) => ({ params: { slug: caseSlug(entry) }, props: { entry } }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { entry } = Astro.props
+---
+
+<CasePage entry={entry} lang="en" />

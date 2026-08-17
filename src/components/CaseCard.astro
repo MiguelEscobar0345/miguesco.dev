@@ -1,0 +1,53 @@
+---
+import type { Lang } from '../consts'
+import { caseSlug, casePath, type CaseEntry } from '../cases'
+import { useTranslations } from '../i18n/utils'
+import Icon from './Icon.astro'
+
+interface Props {
+  entry: CaseEntry
+  lang: Lang
+}
+
+const { entry, lang } = Astro.props
+const t = useTranslations(lang)
+const { client, sector, year, headline, metric } = entry.data
+const href = casePath(caseSlug(entry), lang)
+---
+
+<article
+  class="group relative flex flex-col rounded-xl border border-line bg-bg p-6 transition-colors hover:border-accent sm:p-8"
+>
+  <p class="font-mono text-xs text-muted">
+    {sector} · {year}
+  </p>
+
+  <h3 class="mt-4 text-lg font-semibold">
+    {/*
+      El enlace cubre la tarjeta entera con ::after, pero el nombre accesible
+      sale del texto real: un lector de pantalla lee el titular, no "leer más".
+    */}
+    <a href={href} class="after:absolute after:inset-0 after:content-['']">
+      {headline}
+    </a>
+  </h3>
+
+  <p class="mt-2 text-sm text-muted">{client}</p>
+
+  {/* El número, que es lo único que el lector va a recordar. */}
+  <p class="mt-6 border-t border-line pt-6">
+    <span class="tabular block text-3xl font-semibold text-accent">{metric.value}</span>
+    <span class="mt-1 block text-sm text-muted">{metric.label}</span>
+  </p>
+
+  <p
+    class="mt-auto flex items-center gap-1.5 pt-7 text-sm font-semibold text-accent"
+    aria-hidden="true"
+  >
+    {t.cases.viewCase}
+    <Icon
+      name="arrow"
+      class="size-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+    />
+  </p>
+</article>

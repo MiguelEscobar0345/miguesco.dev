@@ -48,9 +48,27 @@ export interface UIStrings {
   nav: {
     services: string
     pricing: string
+    cases: string
     projects: string
     about: string
     contact: string
+  }
+
+  cases: {
+    title: string
+    lead: string
+    /** Enlace de la tarjeta a la página del caso. */
+    viewCase: string
+    problemLabel: string
+    workLabel: string
+    resultLabel: string
+    stackLabel: string
+    clientLabel: string
+    serviceLabel: string
+    visitSite: string
+    back: string
+    /** Migas de pan de la página del caso. */
+    breadcrumb: string
   }
 
   hero: {

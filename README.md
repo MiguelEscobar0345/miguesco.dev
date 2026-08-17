@@ -48,6 +48,27 @@ npm run dev
 | Configuración de Cloudflare | `wrangler.jsonc` |
 | Proyectos (enlaces, stack) | `src/projects.ts` |
 | Colores y tipografía | `src/styles/global.css` |
+| Casos de estudio | `src/content/cases/{es,en}/*.md` |
+
+## Añadir un caso de estudio
+
+Un caso son dos archivos con el mismo nombre, uno por idioma. El nombre del
+archivo es la URL: `panaderia-la-espiga.md` → `/casos/panaderia-la-espiga`.
+
+1. Copia `src/content/cases/es/_ejemplo.md` y `en/_ejemplo.md` con el nombre nuevo.
+2. Rellena el frontmatter siguiendo la plantilla. La estructura es fija a
+   propósito: **problema → qué hice → resultado**, que es el orden en que lo lee
+   un cliente potencial.
+3. Pon `draft: false` en los dos idiomas.
+4. `npm run verify` y despliega.
+
+`metric` es obligatorio en el esquema: si no puedes escribir un número, el caso
+no está listo. Mientras no haya ningún caso publicado, la sección no aparece en
+la portada y «Casos» no sale en el menú — una sección vacía dice lo contrario de
+lo que queremos que diga.
+
+El proceso completo para llegar a ese número está en
+[docs/proceso-cliente.md](docs/proceso-cliente.md).
 
 Si añades una cadena en un idioma y te olvidas del otro, `npm run check` falla:
 los dos archivos implementan la misma interfaz (`src/i18n/types.ts`).

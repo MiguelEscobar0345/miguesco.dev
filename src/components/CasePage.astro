@@ -1,0 +1,221 @@
+---
+import { render } from 'astro:content'
+
+import { caseSlug, type CaseEntry } from '../cases'
+import { SITE, whatsappUrl, type Lang } from '../consts'
+import { useTranslations, localizePath } from '../i18n/utils'
+import Layout from '../layouts/Layout.astro'
+import Button from './Button.astro'
+import BrandIcon from './BrandIcon.astro'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import Icon from './Icon.astro'
+
+interface Props {
+  entry: CaseEntry
+  lang: Lang
+}
+
+const { entry, lang } = Astro.props
+const t = useTranslations(lang)
+const c = entry.data
+const slug = caseSlug(entry)
+const path = `/casos/${slug}`
+
+// El cuerpo del Markdown es opcional: hay casos que se cuentan enteros con el
+// frontmatter y no necesitan una nota al pie.
+const { Content } = await render(entry)
+const hasBody = entry.body !== undefined && entry.body.trim().length > 0
+
+const service = t.services.items[c.service]
+---
+
+<Layout
+  title={`${c.headline} — ${SITE.name}`}
+  description={c.summary}
+  lang={lang}
+  path={path}
+>
+  <Header lang={lang} path={path} />
+
+  <main id="main">
+    <article>
+      <div class="shell pt-12 pb-16 sm:pt-16">
+        <nav aria-label="breadcrumb">
+          <a
+            href={`${localizePath('/', lang)}#cases`}
+            class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
+          >
+            <Icon name="arrow" class="size-4 rotate-180" />
+            {t.cases.breadcrumb}
+          </a>
+        </nav>
+
+        <p class="mt-8 font-mono text-xs text-muted">{c.sector} · {c.year}</p>
+        <h1 class="mt-4 max-w-3xl text-3xl font-semibold sm:text-4xl">{c.headline}</h1>
+
+        <dl class="mt-10 flex flex-wrap gap-x-12 gap-y-6 border-t border-line pt-8 text-sm">
+          <div>
+            <dt class="text-muted">{t.cases.clientLabel}</dt>
+            <dd class="mt-1 font-semibold">{c.client}</dd>
+          </div>
+          <div>
+            <dt class="text-muted">{t.cases.serviceLabel}</dt>
+            <dd class="mt-1 font-semibold">{service.name}</dd>
+          </div>
+          <div>
+            <dt class="text-muted">{c.metric.label}</dt>
+            <dd class="tabular mt-1 text-2xl leading-none font-semibold text-accent">
+              {c.metric.value}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <div class="border-y border-line bg-bg-subtle">
+        <div class="shell grid gap-12 py-16 sm:py-20 lg:grid-cols-2 lg:gap-16">
+          <section>
+            <h2 class="text-sm font-semibold tracking-wide text-ink uppercase">
+              {t.cases.problemLabel}
+            </h2>
+            <p class="mt-5 leading-relaxed text-muted">{c.problem}</p>
+          </section>
+
+          <section>
+            <h2 class="text-sm font-semibold tracking-wide text-ink uppercase">
+              {t.cases.workLabel}
+            </h2>
+            <ul class="mt-5 space-y-3">
+              {
+                c.work.map((item) => (
+                  <li class="flex gap-2.5 leading-relaxed text-muted">
+                    <Icon name="check" class="mt-1 size-4 shrink-0 text-accent" />
+                    <span>{item}</span>
+                  </li>
+                ))
+              }
+            </ul>
+          </section>
+        </div>
+      </div>
+
+      <div class="shell py-16 sm:py-20">
+        <section class="max-w-3xl">
+          <h2 class="text-sm font-semibold tracking-wide text-ink uppercase">
+            {t.cases.resultLabel}
+          </h2>
+          <p class="mt-5 text-lg leading-relaxed">{c.result}</p>
+        </section>
+
+        {
+          c.testimonial && (
+            <figure class="mt-12 max-w-3xl border-l-2 border-accent pl-6">
+              <blockquote class="text-lg leading-relaxed italic">
+                {c.testimonial.quote}
+              </blockquote>
+              <figcaption class="mt-4 text-sm text-muted">
+                <span class="font-semibold text-ink">{c.testimonial.author}</span>
+                {' · '}
+                {c.testimonial.role}
+              </figcaption>
+            </figure>
+          )
+        }
+
+        {
+          hasBody && (
+            <div class="prose-notes mt-12 max-w-3xl space-y-5 leading-relaxed text-muted">
+              <Content />
+            </div>
+          )
+        }
+
+        <div class="mt-12">
+          <h2 class="text-sm font-semibold tracking-wide text-ink uppercase">
+            {t.cases.stackLabel}
+          </h2>
+          <ul class="mt-5 flex flex-wrap gap-2">
+            {
+              c.stack.map((tech) => (
+                <li class="rounded-md border border-line bg-bg-subtle px-2.5 py-1 font-mono text-xs text-muted">
+                  {tech}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="mt-12 flex flex-wrap gap-3">
+          {
+            c.url && (
+              <Button href={c.url} external newTabLabel={t.a11y.opensInNewTab} variant="secondary">
+                {t.cases.visitSite}
+                <Icon name="arrow" class="size-4" />
+              </Button>
+            )
+          }
+          <Button
+            href={whatsappUrl(t.messages.generalBody)}
+            external
+            newTabLabel={t.a11y.opensInNewTab}
+          >
+            <BrandIcon name="whatsapp" class="size-4" />
+            {t.contact.whatsapp}
+          </Button>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>
+
+<style>
+  /* El cuerpo del Markdown viene sin clases: le damos formato aquí. */
+  .prose-notes :global(p + p) {
+    margin-top: 1.25rem;
+  }
+
+  .prose-notes :global(a) {
+    color: var(--accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+
+  .prose-notes :global(ul),
+  .prose-notes :global(ol) {
+    margin-top: 1.25rem;
+    padding-left: 1.5rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .prose-notes :global(ul) {
+    list-style: disc;
+  }
+
+  .prose-notes :global(ol) {
+    list-style: decimal;
+  }
+
+  .prose-notes :global(li::marker) {
+    color: var(--accent);
+  }
+
+  .prose-notes :global(h2),
+  .prose-notes :global(h3) {
+    margin-top: 2rem;
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose-notes :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+
+  .prose-notes :global(strong) {
+    color: var(--text);
+    font-weight: 600;
+  }
+</style>

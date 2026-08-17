@@ -29,9 +29,25 @@ export const en: UIStrings = {
   nav: {
     services: 'Services',
     pricing: 'Pricing',
+    cases: 'Case studies',
     projects: 'Projects',
     about: 'About',
     contact: 'Contact',
+  },
+
+  cases: {
+    title: 'Case studies',
+    lead: 'Real work for real clients: the problem they had, what I did, and what changed afterwards.',
+    viewCase: 'Read the case',
+    problemLabel: 'The problem',
+    workLabel: 'What I did',
+    resultLabel: 'The result',
+    stackLabel: 'Built with',
+    clientLabel: 'Client',
+    serviceLabel: 'Service',
+    visitSite: 'Visit the site',
+    back: 'Back to case studies',
+    breadcrumb: 'Case studies',
   },
 
   hero: {

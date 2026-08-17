@@ -1,4 +1,5 @@
 ---
+import { publishedCases } from '../cases'
 import { CONTACT, SITE, type Lang } from '../consts'
 import { localizePath, useTranslations } from '../i18n/utils'
 import BrandIcon from './BrandIcon.astro'
@@ -12,10 +13,13 @@ const t = useTranslations(lang)
 const home = localizePath('/', lang)
 const year = new Date().getFullYear()
 
+const hasCases = (await publishedCases(lang)).length > 0
+
 // En móvil el header no muestra el menú, así que la navegación completa vive aquí.
 const links = [
   { hash: '#services', label: t.nav.services },
   { hash: '#pricing', label: t.nav.pricing },
+  ...(hasCases ? [{ hash: '#cases', label: t.nav.cases }] : []),
   { hash: '#projects', label: t.nav.projects },
   { hash: '#about', label: t.nav.about },
   { hash: '#contact', label: t.nav.contact },
