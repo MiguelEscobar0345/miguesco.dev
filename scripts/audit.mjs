@@ -234,6 +234,46 @@ for (const page of PAGES) {
   }
   check(8, at('JSON-LD válido'), graph !== null && Array.isArray(graph['@graph']))
 
+  if (graph?.['@graph']) {
+    const nodos = graph['@graph']
+    const ids = new Set(nodos.map((n) => n['@id']).filter(Boolean))
+
+    // Referencias colgantes: un {"@id": ...} que apunta a una entidad ausente
+    // del grafo deja el dato sin sujeto y Google lo ignora en silencio.
+    const colgantes = []
+    const recorrer = (valor) => {
+      if (Array.isArray(valor)) return valor.forEach(recorrer)
+      if (!valor || typeof valor !== 'object') return
+      const claves = Object.keys(valor)
+      if (claves.length === 1 && claves[0] === '@id' && !ids.has(valor['@id'])) {
+        colgantes.push(valor['@id'])
+      }
+      Object.values(valor).forEach(recorrer)
+    }
+    nodos.forEach(recorrer)
+    check(8, at('referencias del JSON-LD resueltas'), colgantes.length === 0, colgantes.join(', '))
+
+    /**
+     * Tipos que Google valida con propiedades obligatorias. Declarar uno sin
+     * cumplirlas es lo que produce «se ha detectado 1 elemento no válido» en
+     * Search Console: no rompe la indexación, pero desactiva la mejora entera.
+     */
+    const OBLIGATORIAS = {
+      ProfilePage: ['mainEntity'],
+      Product: ['name'],
+      FAQPage: ['mainEntity'],
+      BreadcrumbList: ['itemListElement'],
+      Event: ['name', 'startDate', 'location'],
+    }
+    const incumplen = []
+    for (const nodo of nodos) {
+      for (const prop of OBLIGATORIAS[nodo['@type']] ?? []) {
+        if (!nodo[prop]) incumplen.push(`${nodo['@type']} sin ${prop}`)
+      }
+    }
+    check(8, at('tipos del JSON-LD con sus obligatorias'), incumplen.length === 0, incumplen.join(', '))
+  }
+
   if (graph && page.path === '/') {
     const business = graph['@graph'].find((node) => node['@type'] === 'ProfessionalService')
     const offers = business?.hasOfferCatalog?.itemListElement ?? []

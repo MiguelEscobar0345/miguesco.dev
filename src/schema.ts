@@ -111,24 +111,40 @@ export function buildSchema(options: {
     hasOfferCatalog: offerCatalog(t),
   }
 
+  /**
+   * Las referencias por `@id` sólo se emiten si la entidad viaja en el mismo
+   * grafo. La 404 lleva un grafo reducido, y apuntar desde ahí a `#person` o
+   * `#business` dejaría el dato sin sujeto: Google lo descarta en silencio.
+   */
   const website = {
     '@type': 'WebSite',
     '@id': WEBSITE_ID,
     name: SITE.name,
     url: SITE.url,
     inLanguage: locale,
-    publisher: { '@id': BUSINESS_ID },
+    ...(isHome ? { publisher: { '@id': BUSINESS_ID } } : {}),
   }
 
+  /**
+   * Tipo `WebPage`, no `ProfilePage`.
+   *
+   * `ProfilePage` es para páginas que perfilan a una persona dentro de una
+   * plataforma —un foro, una red social—, y Google le exige `mainEntity`. Al
+   * declararlo sin esa propiedad, Search Console marcaba «1 elemento no válido».
+   *
+   * Además la portada no es un perfil: es una página de servicios. `WebPage`
+   * es lo honesto, no tiene requisitos que incumplir, y el vínculo con la
+   * persona se mantiene explícito con `mainEntity` y `about`.
+   */
   const webPage = {
-    '@type': isHome ? 'ProfilePage' : 'WebPage',
+    '@type': 'WebPage',
     '@id': `${canonical}#webpage`,
     url: canonical,
     name: isHome ? t.meta.home.title : t.meta.notFound.title,
     description: isHome ? t.meta.home.description : t.meta.notFound.description,
     inLanguage: locale,
     isPartOf: { '@id': WEBSITE_ID },
-    about: { '@id': PERSON_ID },
+    ...(isHome ? { mainEntity: { '@id': PERSON_ID }, about: { '@id': PERSON_ID } } : {}),
     primaryImageOfPage: ogImage,
   }
 
