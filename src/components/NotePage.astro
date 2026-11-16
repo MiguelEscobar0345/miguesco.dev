@@ -25,9 +25,12 @@ interface Props {
 
 const { entry, lang } = Astro.props
 const t = useTranslations(lang)
-const { title, summary, date, updated } = entry.data
+const { title, summary, topic, date, updated } = entry.data
 const path = notePath(noteSlug(entry))
 const index = localizePath('/notas/', lang)
+// La firma lleva a «Sobre mí»: quien llega a una nota desde un buscador no ha
+// pasado por la portada y no sabe quién escribe.
+const about = `${localizePath('/', lang)}#about`
 
 const { Content } = await render(entry)
 ---
@@ -56,14 +59,20 @@ const { Content } = await render(entry)
       </a>
 
       <header class="mt-10">
-        <p class="font-mono text-xs text-muted">
+        <p class="font-mono text-xs text-accent">{topic}</p>
+
+        <h1 class="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">{title}</h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted">{summary}</p>
+
+        <p class="mt-6 font-mono text-xs text-muted">
+          <a href={about} rel="author" class="text-ink transition-colors hover:text-accent">
+            {SITE.author}
+          </a>
+          {' · '}
           <time datetime={isoDate(date)}>{formatNoteDate(date, lang)}</time>
           {' · '}
           {fill(t.notes.readingTime, { n: readingMinutes(entry) })}
         </p>
-
-        <h1 class="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">{title}</h1>
-        <p class="mt-5 text-lg leading-relaxed text-muted">{summary}</p>
 
         {
           updated && (

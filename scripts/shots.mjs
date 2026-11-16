@@ -50,12 +50,12 @@ const OG = [
   {
     file: 'og.png',
     headline: 'Desarrollo web, apps a medida e integraciones con IA.',
-    footer: 'Miguel Escobar · Frontend &amp; AI Developer · Medellín',
+    footer: 'Miguel Escobar · Full Stack Developer · Medellín',
   },
   {
     file: 'og-en.png',
     headline: 'Web development, custom apps and AI integrations.',
-    footer: 'Miguel Escobar · Frontend &amp; AI Developer · Medellín',
+    footer: 'Miguel Escobar · Full Stack Developer · Medellín',
   },
 ]
 

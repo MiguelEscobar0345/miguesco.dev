@@ -1,7 +1,8 @@
 ---
 title: 'The language switch that sent me to the footer'
 summary: 'I switched language from the very top of the page and landed in the footer. The bug was trusting the URL, and my own test was hiding another.'
-date: 2026-11-16T10:00:00Z
+topic: 'miguesco.dev'
+date: 2026-11-16T11:00:00Z
 ---
 
 This site is in Spanish and English, and I wanted to get one detail right: if you are reading the pricing and switch language, you should stay on the pricing, not go back to the top.

@@ -1,7 +1,8 @@
 ---
 title: 'Por qué Google no mostraba el favicon de mi web'
 summary: 'En el navegador el icono salía bien, pero Google pintaba un globo genérico. La causa: una regla de tamaño que casi nadie menciona.'
-date: 2026-11-16T12:00:00Z
+topic: 'miguesco.dev'
+date: 2026-11-16T16:00:00Z
 ---
 
 Publiqué esta web, la busqué en Google y junto al resultado no estaba mi logo: estaba el globo terráqueo gris que Google pone cuando no tiene nada mejor. En la pestaña del navegador, en cambio, el icono se veía perfecto.

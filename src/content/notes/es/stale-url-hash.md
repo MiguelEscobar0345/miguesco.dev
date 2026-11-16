@@ -1,7 +1,8 @@
 ---
 title: 'El cambio de idioma que me mandaba al pie de página'
 summary: 'Cambié de idioma estando arriba del todo y aparecí en el pie. El fallo era confiar en la URL, y mi propia prueba escondía otro.'
-date: 2026-11-16T10:00:00Z
+topic: 'miguesco.dev'
+date: 2026-11-16T11:00:00Z
 ---
 
 Esta web está en español y en inglés, y quise cuidar un detalle: si estás leyendo los precios y cambias de idioma, deberías seguir en los precios, no volver al principio.

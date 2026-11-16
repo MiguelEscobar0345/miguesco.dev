@@ -102,15 +102,29 @@ dos idiomas.
 ---
 title: 'El título, que va en el h1 y en la pestaña'
 summary: 'Entre 50 y 165 caracteres: es la entradilla y la meta description.'
+topic: 'MePulse'
 date: 2026-11-16
 ---
 
 El cuerpo, en Markdown. Empieza los apartados en `##`: el `#` es el título.
 ```
 
+`topic` es la etiqueta que sale junto a la fecha y dice de dónde viene la nota:
+un proyecto (`MePulse`, `MeAtmos`, `miguesco.dev`) o un tema (`CSS`,
+`JavaScript`). Máximo 16 caracteres, que es lo que cabe en esa columna.
+
 Si falta la versión de un idioma, el build falla y dice cuál: así no se publica
 un `hreflang` que apunta a una página que no existe. Con `draft: true` la nota
-no sale. Las tres más recientes aparecen en la portada y todas en `/notas/`.
+no sale. Las tres más recientes aparecen en la portada y todas en `/notas/`. El
+orden lo da `date`; si dos notas salen el mismo día, ponle hora
+(`2026-11-16T18:00:00Z`) y la más tardía va primero.
+
+Para enlazar una nota desde otra, la ruta lleva el idioma a mano: `/notas/otra`
+en el archivo español y `/en/notas/otra` en el inglés.
+
+**Si creas una carpeta de contenido nueva con `npm run dev` abierto**, reinicia
+el servidor: Astro no vigila una carpeta que no existía cuando arrancó, y la
+colección se queda vacía hasta que lo haces.
 
 Los bloques de código se resaltan con Prism, que marca con clases, y los colores
 están en `global.css`. No con Shiki, el que trae Astro por defecto: colorea con

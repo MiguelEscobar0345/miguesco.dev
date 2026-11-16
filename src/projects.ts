@@ -26,22 +26,24 @@ export const PROJECTS: Record<ProjectId, Project> = {
   },
 }
 
-/** Tecnologías del "Sobre mí". Orden intencional: de lo más usado a lo más nuevo. */
+/**
+ * Tecnologías del "Sobre mí". Orden intencional: primero el recorrido de una
+ * funcionalidad completa —lenguaje, interfaz, servidor, datos— y después el resto.
+ */
 export const STACK = [
-  'JavaScript',
   'TypeScript',
+  'JavaScript',
   'React',
-  'React Native',
   'Next.js',
-  'Astro',
-  'Tailwind CSS',
+  'React Native',
   'Node.js',
   'Express',
-  'MongoDB',
   'PostgreSQL',
+  'MongoDB',
+  'Astro',
+  'Tailwind CSS',
   'Firebase',
   'Git',
   'Figma',
-  'Power Automate',
   'LLMs & RAG',
 ] as const

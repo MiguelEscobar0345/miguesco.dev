@@ -1,7 +1,8 @@
 ---
 title: 'Una CSP sin unsafe-inline, y lo que rompió en producción'
 summary: 'Una política de seguridad estricta que funcionaba perfecta en local y que en producción bloqueó un script que yo nunca había puesto.'
-date: 2026-11-16T11:00:00Z
+topic: 'miguesco.dev'
+date: 2026-11-16T13:00:00Z
 ---
 
 Una Content-Security-Policy le dice al navegador de dónde puede cargar cosas una página. La mayoría de las que se ven por ahí llevan `'unsafe-inline'`, que viene a ser una puerta blindada con la llave puesta: permite cualquier script escrito dentro del HTML, que es justo lo que un atacante intenta colar.

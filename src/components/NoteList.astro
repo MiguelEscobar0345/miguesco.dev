@@ -14,7 +14,7 @@ interface Props {
 const { notes, lang, heading: Heading = 'h3' } = Astro.props
 ---
 
-{/* Una nota por fila y nada más: fecha, título y de qué va. */}
+{/* Una nota por fila y nada más: fecha, de dónde sale, título y de qué va. */}
 <ul class="divide-y divide-line border-y border-line">
   {
     notes.map((note) => (
@@ -23,12 +23,13 @@ const { notes, lang, heading: Heading = 'h3' } = Astro.props
           href={localizePath(notePath(noteSlug(note)), lang)}
           class="group grid gap-x-8 gap-y-1.5 py-6 sm:grid-cols-[7.5rem_minmax(0,1fr)_auto] sm:items-baseline"
         >
-          <time
-            datetime={isoDate(note.data.date)}
-            class="font-mono text-xs whitespace-nowrap text-muted"
-          >
-            {formatNoteDate(note.data.date, lang, 'short')}
-          </time>
+          <span class="flex items-baseline gap-2 font-mono text-xs whitespace-nowrap text-muted sm:flex-col sm:gap-1.5">
+            <time datetime={isoDate(note.data.date)}>
+              {formatNoteDate(note.data.date, lang, 'short')}
+            </time>
+            <span aria-hidden="true" class="sm:hidden">·</span>
+            <span class="text-accent">{note.data.topic}</span>
+          </span>
 
           <span>
             <Heading class="text-lg font-semibold transition-colors group-hover:text-accent">

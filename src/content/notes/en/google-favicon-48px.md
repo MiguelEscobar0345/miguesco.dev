@@ -1,7 +1,8 @@
 ---
 title: "Why Google would not show my site's favicon"
 summary: 'The icon looked fine in the browser, but Google drew a generic globe. The cause: a size rule almost nobody mentions.'
-date: 2026-11-16T12:00:00Z
+topic: 'miguesco.dev'
+date: 2026-11-16T16:00:00Z
 ---
 
 I published this site, searched for it on Google, and next to the result my logo was missing: in its place was the grey globe Google uses when it has nothing better. In the browser tab, meanwhile, the icon looked perfect.

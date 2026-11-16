@@ -5,7 +5,7 @@ export const es: UIStrings = {
     home: {
       title: 'miguesco — Desarrollo web y automatización con IA',
       description:
-        'Miguel Escobar, Frontend & AI Developer en Medellín. Landings, sitios web, apps a medida y automatización con IA. Precios públicos y entrega en días.',
+        'Miguel Escobar, Full Stack Developer en Medellín. Landings, sitios web, apps a medida y automatización con IA. Precios públicos y entrega en días.',
     },
     notFound: {
       title: 'Página no encontrada — miguesco',
@@ -15,10 +15,10 @@ export const es: UIStrings = {
     notes: {
       title: 'Notas — miguesco',
       description:
-        'Notas técnicas de Miguel Escobar: problemas reales al construir webs, cómo di con la causa y qué cambié. Cortas y con el código a la vista.',
+        'Notas técnicas de Miguel Escobar: problemas reales y decisiones de diseño de mis proyectos, con la causa y el código a la vista.',
     },
     ogImageAlt:
-      'miguesco — Miguel Escobar, Frontend & AI Developer. Desarrollo web y automatización con IA.',
+      'miguesco — Miguel Escobar, Full Stack Developer. Desarrollo web y automatización con IA.',
   },
 
   a11y: {
@@ -43,7 +43,7 @@ export const es: UIStrings = {
 
   notes: {
     title: 'Notas',
-    lead: 'Problemas reales que me encontré construyendo, cómo di con la causa y qué cambié. Cortas y con el código a la vista.',
+    lead: 'Problemas reales y decisiones de diseño de esta web y de mis otros proyectos: qué pasaba, por qué, y el código que quedó.',
     all: 'Todas las notas',
     back: 'Notas',
     readingTime: '{n} min de lectura',
@@ -72,7 +72,7 @@ export const es: UIStrings = {
     eyebrow: 'Hola, soy Miguel Escobar',
     headline: 'Construyo webs rápidas, apps a medida e integraciones con IA.',
     intro:
-      'Frontend & AI Developer en Medellín, con tres años construyendo producto. Pasé por Globant —donde me promovieron de practicante a desarrollador interno— y hoy automatizo procesos internos en Tres Trigos. Trabajo con React, Next.js y Node, y meto IA donde de verdad ahorra tiempo.',
+      'Full Stack Developer en Medellín, con tres años construyendo producto. Pasé por Globant —donde me promovieron de practicante a desarrollador interno— y hoy desarrollo de punta a punta en Tres Trigos, de la interfaz a la base de datos. Trabajo con React, Next.js y Node, y meto IA donde de verdad ahorra tiempo.',
     ctaPrimary: 'Escríbeme por WhatsApp',
     ctaSecondary: 'Enviar un correo',
     responseNote: 'Respondo el mismo día hábil · Medellín, GMT-5',
@@ -121,7 +121,7 @@ export const es: UIStrings = {
         deliverables: [
           'Asistente que responde sobre tus propios documentos (RAG)',
           'Agentes que atienden WhatsApp o correo',
-          'Flujos con Power Automate, n8n o código a medida',
+          'Flujos con n8n o código a medida',
           'Medimos las horas antes y después: si no ahorra, no sirve',
         ],
         revisions: 'Rondas a convenir',
@@ -186,18 +186,18 @@ export const es: UIStrings = {
 
   experience: {
     title: 'Trayectoria',
-    lead: 'Tres años construyendo producto: primero dentro de una multinacional, ahora automatizando una empresa por dentro.',
+    lead: 'Tres años construyendo producto: primero la interfaz dentro de una multinacional, ahora el producto completo, de la pantalla a la base de datos.',
     present: 'Actualidad',
     educationLabel: 'Formación',
     items: {
       trestrigos: {
-        role: 'Web UI & Frontend Developer',
+        role: 'Full Stack Developer · Semi Senior',
         org: 'Tres Trigos',
         place: 'Medellín',
         points: [
-          'Diseñé y construí la app de soporte por tickets sobre PowerApps, Power Automate y Dataverse. La productividad del equipo subió un 80%.',
-          'Automaticé flujos del área de contabilidad para quitarle pasos manuales y riesgo a sus procesos.',
-          'Páginas a medida en HTML, CSS y JavaScript, integradas con WordPress.',
+          'Construyo de punta a punta las aplicaciones web de la empresa: interfaz en React y TypeScript, API en Node.js y datos en PostgreSQL.',
+          'Diseño el modelo de datos y los endpoints de cada funcionalidad, con autenticación y permisos por rol.',
+          'Llevo lo que construyo hasta producción: revisión de código, pruebas y despliegue.',
         ],
       },
       globant: {

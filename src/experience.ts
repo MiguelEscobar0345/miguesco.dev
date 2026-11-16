@@ -22,7 +22,7 @@ export const EXPERIENCE: Record<ExperienceId, ExperienceEntry> = {
     start: '2025-12',
     end: null,
     kind: 'work',
-    stack: ['PowerApps', 'Power Automate', 'Dataverse', 'JavaScript', 'WordPress'],
+    stack: ['React', 'Next.js', 'TypeScript', 'Node.js', 'PostgreSQL'],
   },
   globant: {
     start: '2024-01',

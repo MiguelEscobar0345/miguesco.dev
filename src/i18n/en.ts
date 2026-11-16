@@ -5,7 +5,7 @@ export const en: UIStrings = {
     home: {
       title: 'miguesco — Web development and AI automation',
       description:
-        'Miguel Escobar, Frontend & AI Developer based in Medellín. Landing pages, websites, custom web apps and AI automation. Public pricing, delivery in days.',
+        'Miguel Escobar, Full Stack Developer based in Medellín. Landing pages, websites, custom web apps and AI automation. Public pricing, delivery in days.',
     },
     notFound: {
       title: 'Page not found — miguesco',
@@ -15,10 +15,10 @@ export const en: UIStrings = {
     notes: {
       title: 'Notes — miguesco',
       description:
-        'Technical notes by Miguel Escobar: real problems from building websites, how I tracked down the cause and what I changed. Short, with the code in view.',
+        'Technical notes by Miguel Escobar: real problems and design decisions from my own projects, with the cause and the code in view.',
     },
     ogImageAlt:
-      'miguesco — Miguel Escobar, Frontend & AI Developer. Web development and AI automation.',
+      'miguesco — Miguel Escobar, Full Stack Developer. Web development and AI automation.',
   },
 
   a11y: {
@@ -43,7 +43,7 @@ export const en: UIStrings = {
 
   notes: {
     title: 'Notes',
-    lead: 'Real problems I ran into while building, how I tracked down the cause and what I changed. Short, with the code in view.',
+    lead: 'Real problems and design decisions from this site and my other projects: what was happening, why, and the code that stayed.',
     all: 'All notes',
     back: 'Notes',
     readingTime: '{n} min read',
@@ -72,7 +72,7 @@ export const en: UIStrings = {
     eyebrow: "Hi, I'm Miguel Escobar",
     headline: 'I build fast websites, custom web apps and AI integrations.',
     intro:
-      'Frontend & AI Developer based in Medellín, three years shipping product. I came up through Globant —promoted from intern to in-house developer— and today I automate internal processes at Tres Trigos. I work with React, Next.js and Node, and I bring AI in where it actually saves time.',
+      'Full Stack Developer based in Medellín, three years shipping product. I came up through Globant —promoted from intern to in-house developer— and today I build end to end at Tres Trigos, from the interface to the database. I work with React, Next.js and Node, and I bring AI in where it actually saves time.',
     ctaPrimary: 'Message me on WhatsApp',
     ctaSecondary: 'Send an email',
     responseNote: 'I reply the same business day · Medellín, GMT-5',
@@ -121,7 +121,7 @@ export const en: UIStrings = {
         deliverables: [
           'Assistant that answers from your own documents (RAG)',
           'Agents that handle WhatsApp or email',
-          'Workflows with Power Automate, n8n or custom code',
+          'Workflows with n8n or custom code',
           "We measure the hours before and after: if it doesn't save time, it isn't worth it",
         ],
         revisions: 'Revisions agreed per project',
@@ -186,18 +186,18 @@ export const en: UIStrings = {
 
   experience: {
     title: 'Experience',
-    lead: 'Three years shipping product: first inside a multinational, now automating a company from the inside.',
+    lead: 'Three years shipping product: first the interface inside a multinational, now the whole product, from the screen to the database.',
     present: 'Present',
     educationLabel: 'Education',
     items: {
       trestrigos: {
-        role: 'Web UI & Frontend Developer',
+        role: 'Full Stack Developer · Semi Senior',
         org: 'Tres Trigos',
         place: 'Medellín',
         points: [
-          'Designed and built the ticketing support app on PowerApps, Power Automate and Dataverse. Team productivity went up 80%.',
-          'Automated workflows for the accounting team, removing manual steps and risk from their processes.',
-          'Custom pages in HTML, CSS and JavaScript, integrated with WordPress.',
+          'Build the company’s web applications end to end: React and TypeScript on the interface, a Node.js API and PostgreSQL for the data.',
+          'Design the data model and the endpoints behind each feature, with authentication and role-based permissions.',
+          'Take what I build all the way to production: code review, tests and deployment.',
         ],
       },
       globant: {

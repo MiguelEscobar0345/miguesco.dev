@@ -79,6 +79,11 @@ const notes = defineCollection({
     title: z.string().max(80),
     /** Meta description y entradilla de la nota. */
     summary: z.string().min(50).max(165),
+    /**
+     * De dónde sale la nota: un proyecto («MePulse») o un tema («CSS»). Va como
+     * etiqueta junto a la fecha, así que tiene que caber en esa columna.
+     */
+    topic: z.string().max(16),
     date: z.coerce.date(),
     /** Sólo si la nota se corrige después de publicada. */
     updated: z.coerce.date().optional(),

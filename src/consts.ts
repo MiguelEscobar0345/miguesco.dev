@@ -9,7 +9,7 @@ export const SITE = {
   url: 'https://miguesco.dev',
   author: 'Miguel Escobar',
   fullName: 'Miguel Eduardo Escobar Pereira',
-  jobTitle: 'Frontend & AI Developer',
+  jobTitle: 'Full Stack Developer',
   location: {
     city: 'Medellín',
     region: 'Antioquia',
