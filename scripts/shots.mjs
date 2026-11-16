@@ -23,16 +23,25 @@ const VIEWPORT = { width: 1440, height: 900 } // 16:10, la misma proporción de 
 const OUTPUT = { width: 1600, height: 1000 }
 
 const SHOTS = [
-  { name: 'mepulse', url: 'https://me-pulse.vercel.app/' },
+  {
+    name: 'mepulse',
+    url: 'https://me-pulse.vercel.app/',
+    // El mapa de calor se pinta cuando llegan los datos; sin esperarlo, la
+    // captura sale con el esqueleto de carga.
+    async prepare(page) {
+      await page.locator('.heatmap .tile').first().waitFor({ timeout: 30_000 })
+      await page.waitForTimeout(2_000)
+    },
+  },
   {
     name: 'meatmos',
-    url: 'https://me-atmos.vercel.app/',
-    // Arranca en un estado vacío que pide una ciudad. Sin esto, la captura
-    // sería una pantalla de bienvenida en vez del panel que quiero enseñar.
+    // Cada ciudad tiene su URL (/c/<id de GeoNames>/<slug>): se entra directo
+    // al panel de Medellín en vez de a la pantalla de bienvenida.
+    url: 'https://me-atmos.vercel.app/c/3674962/medellin',
     async prepare(page) {
-      await page.getByPlaceholder(/search city/i).fill('Medellín')
-      await page.getByRole('button', { name: /^search$/i }).click()
-      await page.waitForTimeout(6_000)
+      await page.getByText(/hora local/).first().waitFor({ timeout: 30_000 })
+      // Deja que el cielo termine de dibujarse
+      await page.waitForTimeout(3_000)
     },
   },
 ]

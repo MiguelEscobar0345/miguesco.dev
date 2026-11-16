@@ -17,12 +17,12 @@ export const PROJECTS: Record<ProjectId, Project> = {
   mepulse: {
     demo: 'https://me-pulse.vercel.app/',
     code: 'https://github.com/MiguelEscobar0345/MePulse',
-    stack: ['React 18', 'Vite', 'Vercel Functions', 'CoinGecko API'],
+    stack: ['React 19', 'Vite', 'WebSocket', 'Vercel Functions', 'CoinGecko API'],
   },
   meatmos: {
     demo: 'https://me-atmos.vercel.app/',
     code: 'https://github.com/MiguelEscobar0345/MeAtmos',
-    stack: ['React 18', 'Vite', 'Open-Meteo', 'CSS-in-JS'],
+    stack: ['React 19', 'Vite', 'Motion', 'Canvas', 'Open-Meteo'],
   },
 }
 

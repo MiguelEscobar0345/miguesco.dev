@@ -141,19 +141,19 @@ export const es: UIStrings = {
     items: {
       mepulse: {
         name: 'MePulse',
-        tagline: 'Mercado cripto en tiempo real',
+        tagline: 'Mercado cripto en vivo',
         description:
-          'Dashboard con las 50 criptomonedas más grandes por capitalización, sparklines de 7 días dibujadas a mano en SVG y un modal con el histórico de 30 días. Lo interesante está detrás: monté una capa de funciones serverless en Vercel para saltar el CORS de CoinGecko, con caché en memoria y guardas de StrictMode para no chocar contra el límite de peticiones del plan gratuito.',
+          'Precios que se mueven en tiempo real por el WebSocket de Binance, un mapa de calor del top 50 —el área es la capitalización y el color, el cambio— y una página por moneda con un gráfico que se recorre con el puntero o las flechas. Por dentro: funciones serverless en Vercel con caché en el edge para no chocar contra el límite de CoinGecko, y los precios se agrupan para que 50 cambios por segundo cuesten un solo render.',
         imageAlt:
-          'Panel de MePulse con la tabla de criptomonedas por capitalización de mercado y sus gráficas de siete días',
+          'MePulse en tema oscuro: la capitalización total del mercado cripto en cifras grandes, una frase que resume el día, la barra de cuántas monedas suben y bajan, y el mapa de calor del top 50',
       },
       meatmos: {
         name: 'MeAtmos',
-        tagline: 'Clima y calidad del aire',
+        tagline: 'El clima, a la hora de allá',
         description:
-          'Panel meteorológico para cualquier ciudad del mundo: condiciones actuales, línea de tiempo de 24 horas, pronóstico a 7 días e índice de calidad del aire en escala europea con PM2.5, PM10, ozono y NO₂. El fondo cambia según el clima que esté haciendo. Todo sobre las APIs abiertas de Open-Meteo, sin una sola clave que gestionar.',
+          'Buscas una ciudad y la tarjeta principal se vuelve una ventana a su cielo: lluvia inclinada por el viento real, niebla, nubes según la nubosidad y estrellas de noche, dibujadas en canvas y a la hora local de esa ciudad. Debajo, una frase que resume el día, la curva de 24 horas para recorrer con el puntero, 7 días, calidad del aire, viento y sol. Todo sobre las APIs abiertas de Open-Meteo, sin una sola clave que gestionar.',
         imageAlt:
-          'Panel de MeAtmos mostrando la temperatura actual, el pronóstico de siete días y el índice de calidad del aire',
+          'MeAtmos con el clima de Medellín: la temperatura actual sobre el cielo dibujado de ese momento, una frase que resume las próximas horas y la curva de las siguientes 24 horas',
       },
     },
   },

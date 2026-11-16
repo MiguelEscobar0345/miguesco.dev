@@ -141,19 +141,19 @@ export const en: UIStrings = {
     items: {
       mepulse: {
         name: 'MePulse',
-        tagline: 'Real-time crypto market',
+        tagline: 'Live crypto market',
         description:
-          'A dashboard covering the 50 largest cryptocurrencies by market cap, with 7-day sparklines hand-drawn in SVG and a modal holding 30 days of history. The interesting part is behind it: I built a Vercel serverless layer to get around CoinGecko’s CORS policy, with in-memory caching and StrictMode guards so it never hits the free tier’s rate limit.',
+          'Prices that move in real time over Binance’s WebSocket, a heatmap of the top 50 —area is market cap, color is the change— and a page for every coin with a chart you can scrub with the pointer or the arrow keys. Under the hood: Vercel serverless functions with edge caching to stay under CoinGecko’s rate limit, and price ticks batched so 50 changes a second cost a single render.',
         imageAlt:
-          'MePulse dashboard showing the cryptocurrency table ranked by market cap with their seven-day charts',
+          'MePulse in its dark theme: the total crypto market cap in large figures, a sentence summing up the day, a bar of how many coins are up and down, and the heatmap of the top 50',
       },
       meatmos: {
         name: 'MeAtmos',
-        tagline: 'Weather and air quality',
+        tagline: 'The weather, on local time',
         description:
-          'A weather dashboard for any city in the world: current conditions, a 24-hour timeline, a 7-day forecast and the air quality index on the European scale with PM2.5, PM10, ozone and NO₂. The background shifts with the weather outside. All of it on Open-Meteo’s open APIs, without a single key to manage.',
+          'Search a city and the main card becomes a window onto its sky: rain slanted by the real wind, fog, clouds sized by cloud cover and stars at night, drawn on canvas at that city’s local time. Below it, a sentence that sums up the day, a 24-hour curve you can scrub with the pointer, 7 days, air quality, wind and sun. All of it on Open-Meteo’s open APIs, without a single key to manage.',
         imageAlt:
-          'MeAtmos dashboard showing the current temperature, the seven-day forecast and the air quality index',
+          'MeAtmos showing the weather in Medellín: the current temperature over a drawing of the sky at that moment, a sentence about the next few hours and the curve for the next 24 hours',
       },
     },
   },
