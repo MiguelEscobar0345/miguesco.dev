@@ -17,12 +17,14 @@ const hasCases = (await publishedCases(lang)).length > 0
 
 // En móvil el header no muestra el menú, así que la navegación completa vive aquí.
 const links = [
-  { hash: '#services', label: t.nav.services },
-  { hash: '#pricing', label: t.nav.pricing },
-  ...(hasCases ? [{ hash: '#cases', label: t.nav.cases }] : []),
-  { hash: '#projects', label: t.nav.projects },
-  { hash: '#about', label: t.nav.about },
-  { hash: '#contact', label: t.nav.contact },
+  { href: `${home}#services`, label: t.nav.services },
+  { href: `${home}#pricing`, label: t.nav.pricing },
+  ...(hasCases ? [{ href: `${home}#cases`, label: t.nav.cases }] : []),
+  { href: `${home}#projects`, label: t.nav.projects },
+  // El único que no es un ancla de la portada: las notas tienen página propia.
+  { href: localizePath('/notas/', lang), label: t.nav.notes },
+  { href: `${home}#about`, label: t.nav.about },
+  { href: `${home}#contact`, label: t.nav.contact },
 ]
 
 const social = [
@@ -34,13 +36,13 @@ const social = [
 
 <footer class="border-t border-line bg-bg-subtle">
   <div class="shell py-12">
-    <nav aria-label={t.a11y.footerNav} class="md:hidden">
+    <nav aria-label={t.a11y.footerNav} class="lg:hidden">
       <ul class="flex flex-wrap gap-x-6 gap-y-3 text-sm">
         {
           links.map((link) => (
             <li>
               <a
-                href={`${home}${link.hash}`}
+                href={link.href}
                 class="text-muted transition-colors hover:text-accent"
               >
                 {link.label}
@@ -52,7 +54,7 @@ const social = [
     </nav>
 
     <div
-      class="mt-8 flex flex-col gap-6 border-t border-line pt-8 md:mt-0 md:flex-row md:items-center md:justify-between md:border-t-0 md:pt-0"
+      class="mt-8 flex flex-col gap-6 border-t border-line pt-8 md:flex-row md:items-center md:justify-between lg:mt-0 lg:border-t-0 lg:pt-0"
     >
       <div>
         <p class="text-sm font-semibold">

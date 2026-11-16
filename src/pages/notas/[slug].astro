@@ -1,0 +1,17 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import NotePage from '../../components/NotePage.astro'
+import { noteSlug, publishedNotes } from '../../notes'
+
+export const getStaticPaths = (async () => {
+  const notes = await publishedNotes('es')
+  return notes.map((entry) => ({ params: { slug: noteSlug(entry) }, props: { entry } }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { entry } = Astro.props
+---
+
+<NotePage entry={entry} lang="es" />

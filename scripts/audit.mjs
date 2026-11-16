@@ -49,10 +49,8 @@ function describePage(file) {
   const isEnglish = file === 'en/index.html' || file.startsWith('en/')
   const lang = isEnglish ? 'en' : 'es-CO'
 
-  let path = `/${file}`
-    .replace(/\/index\.html$/, '/')
-    .replace(/\.html$/, '')
-  if (path !== '/' && path !== '/en/' && path.endsWith('/')) path = path.slice(0, -1)
+  // Con build.format 'preserve', `x/index.html` se sirve en `/x/` y `x.html` en `/x`.
+  const path = `/${file}`.replace(/\/index\.html$/, '/').replace(/\.html$/, '')
 
   return { file, lang, path, noindex: /(^|\/)404(\/|$)/.test(path) }
 }
@@ -107,7 +105,7 @@ for (const file of REQUIRED_FILES) {
   check(point, `existe ${file}`, existsSync(join(DIST, file)))
 }
 check(3, 'existe 404.html', existsSync(join(DIST, '404.html')))
-check(3, 'existe en/404/', existsSync(join(DIST, 'en', '404', 'index.html')))
+check(3, 'existe en/404.html', existsSync(join(DIST, 'en', '404.html')))
 
 const PAGES = allFiles
   .filter((file) => file.endsWith('.html'))
@@ -119,6 +117,8 @@ check(2, 'páginas encontradas en dist', PAGES.length >= 4, PAGES.map((p) => p.p
 // ── Páginas ────────────────────────────────────────────────────────────────
 const titles = new Map()
 const descriptions = new Map()
+/** Canonical de cada página indexable: es lo que tiene que listar el sitemap. */
+const indexables = new Set()
 
 for (const page of PAGES) {
   const file = join(DIST, page.file)
@@ -170,6 +170,7 @@ for (const page of PAGES) {
   const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') ?? ''
   const expected = new URL(page.path, SITE_URL).href
   check(11, at('canonical'), canonical === expected, canonical || 'ausente')
+  if (!page.noindex) indexables.add(canonical)
 
   // 1 · dominio propio, no una URL de vercel.app
   check(1, at('dominio propio'), !canonical.includes('vercel.app'), canonical)
@@ -406,16 +407,19 @@ if (existsSync(join(DIST, 'llms.txt'))) {
   check(12, 'llms.txt con servicios y contacto', llms.includes('## Servicios') && llms.includes('## Contacto'), `${llms.length} caracteres`)
 }
 
-// 15 · sitemap con las dos portadas
+// 15 · el sitemap lista exactamente las páginas indexables, con su canonical.
+// Se comparan los <loc> uno a uno: buscar un trozo de URL como texto daría por
+// bueno "/en/notas" cuando lo que se pregunta es si está "/en/".
 const sitemapFile = allFiles.find((file) => /sitemap-\d+\.xml$/.test(file))
 if (sitemapFile) {
   const sitemap = await readFile(sitemapFile, 'utf8')
-  const home = new URL('/', SITE_URL).href
-  check(
-    15,
-    'sitemap incluye las dos portadas',
-    sitemap.includes(home) && sitemap.includes(new URL('/en/', SITE_URL).href),
-  )
+  const locs = new Set([...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]))
+
+  const faltan = [...indexables].filter((url) => !locs.has(url))
+  const sobran = [...locs].filter((url) => !indexables.has(url))
+
+  check(15, 'sitemap: están todas las páginas indexables', faltan.length === 0, faltan.join('  '))
+  check(15, 'sitemap: cada URL es el canonical de una página', sobran.length === 0, sobran.join('  '))
 }
 
 // ── Avisos: no rompen nada, pero no deberían llegar a producción ───────────

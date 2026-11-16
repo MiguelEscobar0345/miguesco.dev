@@ -53,14 +53,24 @@ function offerCatalog(t: UIStrings) {
   }
 }
 
+export interface ArticleDates {
+  published: Date
+  modified?: Date
+}
+
 export function buildSchema(options: {
   lang: Lang
   t: UIStrings
   canonical: string
   ogImage: string
+  /** El título y la descripción de ESTA página, los mismos de sus metaetiquetas. */
+  title: string
+  description: string
   isHome: boolean
+  /** Presente sólo en las notas: añade un BlogPosting al grafo. */
+  article?: ArticleDates
 }) {
-  const { lang, t, canonical, ogImage, isHome } = options
+  const { lang, t, canonical, ogImage, title, description, isHome, article } = options
   const locale = LOCALE_TAG[lang]
 
   const person = {
@@ -140,12 +150,32 @@ export function buildSchema(options: {
     '@type': 'WebPage',
     '@id': `${canonical}#webpage`,
     url: canonical,
-    name: isHome ? t.meta.home.title : t.meta.notFound.title,
-    description: isHome ? t.meta.home.description : t.meta.notFound.description,
+    name: title,
+    description,
     inLanguage: locale,
     isPartOf: { '@id': WEBSITE_ID },
     ...(isHome ? { mainEntity: { '@id': PERSON_ID }, about: { '@id': PERSON_ID } } : {}),
     primaryImageOfPage: ogImage,
+  }
+
+  if (article) {
+    // El autor se referencia por @id, así que la persona tiene que viajar en
+    // el mismo grafo: sin ella sería una referencia colgante.
+    const posting = {
+      '@type': 'BlogPosting',
+      '@id': `${canonical}#article`,
+      headline: title.replace(` — ${SITE.name}`, ''),
+      description,
+      inLanguage: locale,
+      datePublished: article.published.toISOString(),
+      dateModified: (article.modified ?? article.published).toISOString(),
+      author: { '@id': PERSON_ID },
+      publisher: { '@id': PERSON_ID },
+      mainEntityOfPage: { '@id': `${canonical}#webpage` },
+      image: ogImage,
+    }
+
+    return { '@context': 'https://schema.org', '@graph': [person, website, webPage, posting] }
   }
 
   return {

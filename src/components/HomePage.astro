@@ -10,6 +10,7 @@ import Experience from './Experience.astro'
 import Footer from './Footer.astro'
 import Header from './Header.astro'
 import Hero from './Hero.astro'
+import Notes from './Notes.astro'
 import Pricing from './Pricing.astro'
 import Projects from './Projects.astro'
 import Services from './Services.astro'
@@ -44,6 +45,8 @@ const t = useTranslations(lang)
     <Projects lang={lang} />
     <Experience lang={lang} />
     <About lang={lang} />
+    {/* Las notas van al final: primero qué vendo y quién soy, después cómo pienso. */}
+    <Notes lang={lang} />
     <Contact lang={lang} />
   </main>
 

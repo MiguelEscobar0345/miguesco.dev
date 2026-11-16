@@ -1,0 +1,22 @@
+---
+import type { GetStaticPaths, InferGetStaticPropsType } from 'astro'
+
+import NotePage from '../../../components/NotePage.astro'
+import { noteSlug, publishedNotes } from '../../../notes'
+
+/**
+ * El segmento se queda en «notas» también en inglés, igual que «casos» y que
+ * los anclas: el selector de idioma salta de una versión a otra cambiando sólo
+ * el prefijo, sin una tabla de traducción de rutas.
+ */
+export const getStaticPaths = (async () => {
+  const notes = await publishedNotes('en')
+  return notes.map((entry) => ({ params: { slug: noteSlug(entry) }, props: { entry } }))
+}) satisfies GetStaticPaths
+
+type Props = InferGetStaticPropsType<typeof getStaticPaths>
+
+const { entry } = Astro.props
+---
+
+<NotePage entry={entry} lang="en" />

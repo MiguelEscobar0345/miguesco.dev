@@ -1,0 +1,36 @@
+---
+import type { Lang } from '../consts'
+import { localizePath, useTranslations } from '../i18n/utils'
+import { publishedNotes } from '../notes'
+import Button from './Button.astro'
+import Icon from './Icon.astro'
+import NoteList from './NoteList.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+/** En la portada sólo las más recientes; el resto vive en /notas/. */
+const LATEST = 3
+const notes = await publishedNotes(lang)
+---
+
+{/* Igual que los casos: sin notas publicadas, la sección no existe. */}
+{
+  notes.length > 0 && (
+    <Section id="notes" title={t.notes.title} lead={t.notes.lead}>
+      <NoteList notes={notes.slice(0, LATEST)} lang={lang} />
+
+      <div class="mt-8">
+        <Button href={localizePath('/notas/', lang)} variant="secondary">
+          {t.notes.all}
+          <Icon name="arrow" class="size-4" />
+        </Button>
+      </div>
+    </Section>
+  )
+}

@@ -45,6 +45,8 @@ export interface UIStrings {
   meta: {
     home: MetaStrings
     notFound: MetaStrings
+    /** La página que lista todas las notas. */
+    notes: MetaStrings
     ogImageAlt: string
   }
 
@@ -63,8 +65,24 @@ export interface UIStrings {
     pricing: string
     cases: string
     projects: string
+    notes: string
     about: string
     contact: string
+  }
+
+  notes: {
+    title: string
+    lead: string
+    /** Enlace de la portada a la lista completa. */
+    all: string
+    /** Enlace de vuelta desde una nota. */
+    back: string
+    /** `{n}` = minutos. */
+    readingTime: string
+    /** `{date}` = fecha ya formateada. */
+    updated: string
+    outro: string
+    outroCta: string
   }
 
   cases: {

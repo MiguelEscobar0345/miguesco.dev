@@ -24,17 +24,19 @@ const hasCases = (await publishedCases(lang)).length > 0
  * y no arriba del todo.
  */
 const links = [
-  { hash: '#services', label: t.nav.services },
-  { hash: '#pricing', label: t.nav.pricing },
-  ...(hasCases ? [{ hash: '#cases', label: t.nav.cases }] : []),
-  { hash: '#projects', label: t.nav.projects },
-  { hash: '#about', label: t.nav.about },
-  { hash: '#contact', label: t.nav.contact },
+  { href: `${home}#services`, label: t.nav.services },
+  { href: `${home}#pricing`, label: t.nav.pricing },
+  ...(hasCases ? [{ href: `${home}#cases`, label: t.nav.cases }] : []),
+  { href: `${home}#projects`, label: t.nav.projects },
+  // El único que no es un ancla de la portada: las notas tienen página propia.
+  { href: localizePath('/notas/', lang), label: t.nav.notes },
+  { href: `${home}#about`, label: t.nav.about },
+  { href: `${home}#contact`, label: t.nav.contact },
 ]
 ---
 
 <header
-  class="sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md supports-[backdrop-filter]:bg-bg/70"
+  class="site-header sticky top-0 z-40 border-b border-line bg-bg/85 backdrop-blur-md supports-[backdrop-filter]:bg-bg/70"
 >
   <div class="shell flex h-16 items-center justify-between gap-4">
     <a
@@ -44,13 +46,15 @@ const links = [
       migue<span class="text-accent">sco</span>
     </a>
 
-    <nav aria-label={t.a11y.mainNav} class="hidden md:block">
+    {/* Con siete enlaces el menú ya no cabe en una tablet en vertical: aparece
+        desde `lg`, y por debajo la navegación completa está en el pie. */}
+    <nav aria-label={t.a11y.mainNav} class="hidden lg:block">
       <ul class="flex items-center gap-6 text-sm">
         {
           links.map((link) => (
             <li>
               <a
-                href={`${home}${link.hash}`}
+                href={link.href}
                 class="text-muted transition-colors hover:text-accent"
               >
                 {link.label}

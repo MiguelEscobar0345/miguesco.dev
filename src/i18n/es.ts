@@ -12,6 +12,11 @@ export const es: UIStrings = {
       description:
         'La página que buscas no existe o cambió de dirección. Vuelve al inicio para ver servicios, precios y proyectos.',
     },
+    notes: {
+      title: 'Notas — miguesco',
+      description:
+        'Notas técnicas de Miguel Escobar: problemas reales al construir webs, cómo di con la causa y qué cambié. Cortas y con el código a la vista.',
+    },
     ogImageAlt:
       'miguesco — Miguel Escobar, Frontend & AI Developer. Desarrollo web y automatización con IA.',
   },
@@ -31,8 +36,20 @@ export const es: UIStrings = {
     pricing: 'Precios',
     cases: 'Casos',
     projects: 'Proyectos',
+    notes: 'Notas',
     about: 'Sobre mí',
     contact: 'Contacto',
+  },
+
+  notes: {
+    title: 'Notas',
+    lead: 'Problemas reales que me encontré construyendo, cómo di con la causa y qué cambié. Cortas y con el código a la vista.',
+    all: 'Todas las notas',
+    back: 'Notas',
+    readingTime: '{n} min de lectura',
+    updated: 'Actualizada el {date}',
+    outro: '¿Te pasó algo parecido, o lo habrías resuelto de otra forma? Escríbeme y lo hablamos.',
+    outroCta: 'Escribir por WhatsApp',
   },
 
   cases: {

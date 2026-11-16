@@ -1,0 +1,101 @@
+---
+import { render } from 'astro:content'
+
+import { SITE, whatsappUrl, type Lang } from '../consts'
+import { fill, localizePath, useTranslations } from '../i18n/utils'
+import Layout from '../layouts/Layout.astro'
+import {
+  formatNoteDate,
+  isoDate,
+  notePath,
+  noteSlug,
+  readingMinutes,
+  type NoteEntry,
+} from '../notes'
+import BrandIcon from './BrandIcon.astro'
+import Button from './Button.astro'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import Icon from './Icon.astro'
+
+interface Props {
+  entry: NoteEntry
+  lang: Lang
+}
+
+const { entry, lang } = Astro.props
+const t = useTranslations(lang)
+const { title, summary, date, updated } = entry.data
+const path = notePath(noteSlug(entry))
+const index = localizePath('/notas/', lang)
+
+const { Content } = await render(entry)
+---
+
+<Layout
+  title={`${title} — ${SITE.name}`}
+  description={summary}
+  lang={lang}
+  path={path}
+  article={{ published: date, modified: updated }}
+>
+  <Header lang={lang} path={path} />
+
+  <main id="main">
+    {/*
+      Lectura sobria: una columna centrada y recta hacia abajo. Sin barra
+      lateral, sin tarjetas, sin nada que compita con el texto.
+    */}
+    <article class="reading pt-12 pb-24 sm:pt-16">
+      <a
+        href={index}
+        class="inline-flex items-center gap-1.5 text-sm text-muted transition-colors hover:text-accent"
+      >
+        <Icon name="arrow" class="size-4 rotate-180" />
+        {t.notes.back}
+      </a>
+
+      <header class="mt-10">
+        <p class="font-mono text-xs text-muted">
+          <time datetime={isoDate(date)}>{formatNoteDate(date, lang)}</time>
+          {' · '}
+          {fill(t.notes.readingTime, { n: readingMinutes(entry) })}
+        </p>
+
+        <h1 class="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">{title}</h1>
+        <p class="mt-5 text-lg leading-relaxed text-muted">{summary}</p>
+
+        {
+          updated && (
+            <p class="mt-4 text-sm text-muted">
+              <time datetime={isoDate(updated)}>
+                {fill(t.notes.updated, { date: formatNoteDate(updated, lang) })}
+              </time>
+            </p>
+          )
+        }
+      </header>
+
+      <div class="prose mt-10 border-t border-line pt-10">
+        <Content />
+      </div>
+
+      <footer class="mt-16 border-t border-line pt-8">
+        <p class="leading-relaxed text-muted">{t.notes.outro}</p>
+        <div class="mt-6 flex flex-wrap gap-3">
+          <Button
+            href={whatsappUrl(t.messages.generalBody)}
+            external
+            newTabLabel={t.a11y.opensInNewTab}
+          >
+            <BrandIcon name="whatsapp" class="size-4" />
+            {t.notes.outroCta}
+          </Button>
+          <Button href={index} variant="secondary">{t.notes.all}</Button>
+        </div>
+      </footer>
+    </article>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>

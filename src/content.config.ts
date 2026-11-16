@@ -64,4 +64,25 @@ const cases = defineCollection({
   }),
 })
 
-export const collections = { cases }
+/**
+ * Notas técnicas.
+ *
+ * Igual que los casos: dos archivos por nota, `es/<slug>.md` y `en/<slug>.md`,
+ * con el mismo nombre, que es además la URL. A diferencia de los casos, aquí el
+ * cuerpo es libre: es un texto para leer de arriba abajo, no una ficha.
+ */
+const notes = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/notes' }),
+  schema: z.object({
+    draft: z.boolean().default(false),
+    /** Va en el <h1> y en el <title>. */
+    title: z.string().max(80),
+    /** Meta description y entradilla de la nota. */
+    summary: z.string().min(50).max(165),
+    date: z.coerce.date(),
+    /** Sólo si la nota se corrige después de publicada. */
+    updated: z.coerce.date().optional(),
+  }),
+})
+
+export const collections = { cases, notes }

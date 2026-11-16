@@ -12,6 +12,11 @@ export const en: UIStrings = {
       description:
         'The page you are looking for does not exist or has moved. Head back home for services, pricing and projects.',
     },
+    notes: {
+      title: 'Notes — miguesco',
+      description:
+        'Technical notes by Miguel Escobar: real problems from building websites, how I tracked down the cause and what I changed. Short, with the code in view.',
+    },
     ogImageAlt:
       'miguesco — Miguel Escobar, Frontend & AI Developer. Web development and AI automation.',
   },
@@ -31,8 +36,20 @@ export const en: UIStrings = {
     pricing: 'Pricing',
     cases: 'Case studies',
     projects: 'Projects',
+    notes: 'Notes',
     about: 'About',
     contact: 'Contact',
+  },
+
+  notes: {
+    title: 'Notes',
+    lead: 'Real problems I ran into while building, how I tracked down the cause and what I changed. Short, with the code in view.',
+    all: 'All notes',
+    back: 'Notes',
+    readingTime: '{n} min read',
+    updated: 'Updated {date}',
+    outro: 'Did you hit something similar, or would you have solved it differently? Write to me and we can talk it through.',
+    outroCta: 'Message on WhatsApp',
   },
 
   cases: {

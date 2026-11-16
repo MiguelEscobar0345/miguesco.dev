@@ -144,6 +144,195 @@
       padding-inline: 2rem;
     }
   }
+
+  /*
+    Columna de lectura de las notas: una sola, centrada y recta hacia abajo.
+    El ancho da unos 70 caracteres por línea, que es donde el ojo no se pierde
+    al volver al margen izquierdo.
+  */
+  .reading {
+    width: 100%;
+    max-width: 44rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+
+  /* El cuerpo de una nota llega del Markdown sin clases: el formato va aquí. */
+  .prose {
+    font-size: 1.0625rem;
+    line-height: 1.75;
+    color: color-mix(in srgb, var(--text) 88%, var(--bg));
+  }
+
+  .prose > * + * {
+    margin-top: 1.5rem;
+  }
+
+  .prose h2,
+  .prose h3 {
+    color: var(--text);
+    font-weight: 600;
+    line-height: 1.25;
+  }
+
+  .prose h2 {
+    margin-top: 3rem;
+    font-size: 1.5rem;
+  }
+
+  .prose h3 {
+    margin-top: 2.25rem;
+    font-size: 1.1875rem;
+  }
+
+  .prose h2 + *,
+  .prose h3 + * {
+    margin-top: 1rem;
+  }
+
+  .prose a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .prose strong {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .prose ul,
+  .prose ol {
+    display: grid;
+    gap: 0.6rem;
+    padding-left: 1.4rem;
+  }
+
+  .prose ul {
+    list-style: disc;
+  }
+
+  .prose ol {
+    list-style: decimal;
+  }
+
+  .prose li::marker {
+    color: var(--accent);
+  }
+
+  .prose blockquote {
+    border-left: 2px solid var(--accent);
+    padding-left: 1.1rem;
+    color: var(--text-muted);
+  }
+
+  .prose hr {
+    margin-block: 3rem;
+    border: 0;
+    border-top: 1px solid var(--border);
+  }
+
+  .prose code,
+  .prose pre {
+    font-family:
+      ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+  }
+
+  .prose :not(pre) > code {
+    border: 1px solid var(--border);
+    border-radius: 0.35rem;
+    background-color: var(--bg-subtle);
+    padding: 0.12em 0.4em;
+    font-size: 0.875em;
+    color: var(--text);
+  }
+
+  /* El bloque de código hace scroll por dentro; la página nunca de lado. */
+  .prose pre {
+    overflow-x: auto;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background-color: var(--bg-subtle);
+    padding: 1rem 1.15rem;
+    font-size: 0.8125rem;
+    line-height: 1.7;
+    color: var(--text);
+    tab-size: 2;
+  }
+
+  /*
+    Colores del código. Prism marca cada palabra con una clase y aquí se le da
+    color con las variables del tema, así que el resaltado cambia solo entre
+    claro y oscuro y no hay un solo `style` en línea que la CSP tenga que
+    bloquear. Tres tonos nada más: texto, acento y gris.
+  */
+  .prose .token.comment,
+  .prose .token.prolog,
+  .prose .token.doctype,
+  .prose .token.cdata {
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  .prose .token.punctuation,
+  .prose .token.operator {
+    color: var(--text-muted);
+  }
+
+  .prose .token.string,
+  .prose .token.attr-value,
+  .prose .token.number,
+  .prose .token.boolean {
+    color: var(--accent);
+  }
+
+  .prose .token.keyword,
+  .prose .token.tag,
+  .prose .token.selector,
+  .prose .token.atrule {
+    font-weight: 600;
+  }
+
+  /* Portada de proyecto que se inclina hacia el puntero. */
+  .tilt {
+    perspective: 56rem;
+  }
+
+  .tilt-media {
+    transform: rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)) scale(var(--zoom, 1));
+    /* Al soltar, vuelve despacio a su sitio. */
+    transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  /* Mientras sigue al puntero responde rápido, y crece un poco para que al
+     girar no asome el fondo por las esquinas del marco. */
+  .tilt[data-active] .tilt-media {
+    --zoom: 1.06;
+    transition: transform 0.14s ease-out;
+  }
+
+  .tilt-glare {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at var(--gx, 50%) var(--gy, 50%),
+      rgb(255 255 255 / 0.16),
+      transparent 55%
+    );
+    transition: opacity 0.35s ease;
+  }
+
+  .tilt[data-active] .tilt-glare {
+    opacity: 1;
+  }
+
+  /* El header conserva su sitio al cambiar de página: no parpadea con el resto. */
+  .site-header {
+    view-transition-name: site-header;
+  }
 }
 
 @layer utilities {
@@ -229,6 +418,38 @@
       opacity: 0;
       translate: 0 -0.25rem;
     }
+  }
+}
+
+/*
+  Transiciones entre páginas, sin JavaScript: al cambiar de idioma o abrir una
+  nota, el contenido se funde en vez de saltar. Es una navegación normal de
+  toda la vida; el navegador que no lo soporte simplemente carga la página.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition {
+    navigation: auto;
+  }
+
+  ::view-transition-old(root) {
+    animation: 0.16s ease-in both page-out;
+  }
+
+  ::view-transition-new(root) {
+    animation: 0.3s ease-out both page-in;
+  }
+}
+
+@keyframes page-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    translate: 0 0.5rem;
   }
 }
 

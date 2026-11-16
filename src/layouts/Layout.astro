@@ -3,7 +3,7 @@ import '../styles/global.css'
 
 import { LOCALE_TAG, OG_LOCALE, SITE, type Lang } from '../consts'
 import { OTHER_LANG, localizePath, useTranslations } from '../i18n/utils'
-import { buildSchema } from '../schema'
+import { buildSchema, type ArticleDates } from '../schema'
 
 interface Props {
   /** Obligatorio a propósito: sin esto no compila, y así no hay dos páginas con el mismo título. */
@@ -15,9 +15,19 @@ interface Props {
   path: string
   isHome?: boolean
   noindex?: boolean
+  /** Fechas de una nota. Cambia og:type a "article" y añade el BlogPosting. */
+  article?: ArticleDates
 }
 
-const { title, description, lang, path, isHome = false, noindex = false } = Astro.props
+const {
+  title,
+  description,
+  lang,
+  path,
+  isHome = false,
+  noindex = false,
+  article,
+} = Astro.props
 
 const t = useTranslations(lang)
 const other = OTHER_LANG[lang]
@@ -37,10 +47,9 @@ const ogImage = new URL(lang === 'es' ? '/og.png' : '/og-en.png', SITE.url).href
  * día que alguien escriba sobre etiquetas en una descripción, no quiero que la
  * página se rompa por eso.
  */
-const schema = JSON.stringify(buildSchema({ lang, t, canonical, ogImage, isHome })).replaceAll(
-  '<',
-  '\\u003c',
-)
+const schema = JSON.stringify(
+  buildSchema({ lang, t, canonical, ogImage, title, description, isHome, article }),
+).replaceAll('<', '\\u003c')
 ---
 
 <!doctype html>
@@ -63,7 +72,17 @@ const schema = JSON.stringify(buildSchema({ lang, t, canonical, ogImage, isHome 
     <meta name="author" content={SITE.author} />
     <meta name="generator" content={Astro.generator} />
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={article ? 'article' : 'website'} />
+    {
+      article && (
+        <meta property="article:published_time" content={article.published.toISOString()} />
+      )
+    }
+    {
+      article?.modified && (
+        <meta property="article:modified_time" content={article.modified.toISOString()} />
+      )
+    }
     <meta property="og:site_name" content={SITE.name} />
     <meta property="og:locale" content={OG_LOCALE[lang]} />
     <meta property="og:locale:alternate" content={OG_LOCALE[other]} />

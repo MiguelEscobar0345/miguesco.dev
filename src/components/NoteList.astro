@@ -1,0 +1,50 @@
+---
+import type { Lang } from '../consts'
+import { localizePath } from '../i18n/utils'
+import { formatNoteDate, isoDate, notePath, noteSlug, type NoteEntry } from '../notes'
+import Icon from './Icon.astro'
+
+interface Props {
+  notes: NoteEntry[]
+  lang: Lang
+  /** h3 dentro de una sección de la portada; h2 en la página que las lista. */
+  heading?: 'h2' | 'h3'
+}
+
+const { notes, lang, heading: Heading = 'h3' } = Astro.props
+---
+
+{/* Una nota por fila y nada más: fecha, título y de qué va. */}
+<ul class="divide-y divide-line border-y border-line">
+  {
+    notes.map((note) => (
+      <li>
+        <a
+          href={localizePath(notePath(noteSlug(note)), lang)}
+          class="group grid gap-x-8 gap-y-1.5 py-6 sm:grid-cols-[7.5rem_minmax(0,1fr)_auto] sm:items-baseline"
+        >
+          <time
+            datetime={isoDate(note.data.date)}
+            class="font-mono text-xs whitespace-nowrap text-muted"
+          >
+            {formatNoteDate(note.data.date, lang, 'short')}
+          </time>
+
+          <span>
+            <Heading class="text-lg font-semibold transition-colors group-hover:text-accent">
+              {note.data.title}
+            </Heading>
+            <span class="mt-1.5 block text-sm leading-relaxed text-muted">
+              {note.data.summary}
+            </span>
+          </span>
+
+          <Icon
+            name="arrow"
+            class="hidden size-4 text-muted transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-accent sm:block"
+          />
+        </a>
+      </li>
+    ))
+  }
+</ul>

@@ -49,6 +49,7 @@ npm run dev
 | Proyectos (enlaces, stack) | `src/projects.ts` |
 | Colores y tipografía | `src/styles/global.css` |
 | Casos de estudio | `src/content/cases/{es,en}/*.md` |
+| Notas técnicas | `src/content/notes/{es,en}/*.md` |
 | Extras y páginas del configurador | `src/i18n/pricing.ts` (`EXTRAS`, `PAGES`) |
 | Trayectoria (fechas y stack) | `src/experience.ts`; los textos, en `es.ts` y `en.ts` |
 
@@ -89,6 +90,31 @@ El proceso completo para llegar a ese número está en
 
 Si añades una cadena en un idioma y te olvidas del otro, `npm run check` falla:
 los dos archivos implementan la misma interfaz (`src/i18n/types.ts`).
+
+## Añadir una nota
+
+Igual que los casos: dos archivos con el mismo nombre, uno en
+`src/content/notes/es/` y otro en `en/`. El nombre es la URL
+(`mi-nota.md` → `/notas/mi-nota`), así que conviene uno que se lea bien en los
+dos idiomas.
+
+```md
+---
+title: 'El título, que va en el h1 y en la pestaña'
+summary: 'Entre 50 y 165 caracteres: es la entradilla y la meta description.'
+date: 2026-11-16
+---
+
+El cuerpo, en Markdown. Empieza los apartados en `##`: el `#` es el título.
+```
+
+Si falta la versión de un idioma, el build falla y dice cuál: así no se publica
+un `hreflang` que apunta a una página que no existe. Con `draft: true` la nota
+no sale. Las tres más recientes aparecen en la portada y todas en `/notas/`.
+
+Los bloques de código se resaltan con Prism, que marca con clases, y los colores
+están en `global.css`. No con Shiki, el que trae Astro por defecto: colorea con
+atributos `style` y la CSP del sitio los bloquearía.
 
 ## Auditoría
 
@@ -166,10 +192,18 @@ verifícalo con el registro TXT que te dé, y envía
 
 ## Detalles que conviene saber
 
-- **La página 404.** Astro deja la española en `dist/404.html`, que es la que
-  sirven Vercel y compañía ante cualquier ruta desconocida. La inglesa existe en
-  `/en/404` como página normal, pero un alojamiento estático sólo puede tener una
-  404 automática y será la española.
+- **Las URLs no llevan barra final, salvo los índices.** Con
+  `build.format: 'preserve'` una nota sale como `notas/mi-nota.html` y se sirve
+  en `/notas/mi-nota`; un índice como `notas/index.html`, en `/notas/`. Es lo
+  mismo que declara el canonical y lo que lista el sitemap, y el auditor compara
+  las tres cosas una a una.
+- **La página 404.** Hay una por idioma: `dist/404.html` y `dist/en/404.html`.
+  Cloudflare sirve la más cercana subiendo por las carpetas, así que una ruta
+  desconocida bajo `/en/` debería responder con la inglesa.
+- **El movimiento es casi todo CSS.** La línea de la trayectoria y las
+  transiciones entre páginas no llevan JavaScript; sólo lo usan el total del
+  configurador y la inclinación de las portadas, que además se apaga en táctil.
+  Todo respeta `prefers-reduced-motion`.
 - **Las capturas de los proyectos** se generan con Playwright desde las demos en
   producción. Para actualizarlas: `npx playwright install chromium` una vez y
   luego `npm run shots`. Con `npm run shots -- --og` sólo se rehacen las imágenes

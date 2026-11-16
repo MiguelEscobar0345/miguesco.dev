@@ -3,7 +3,31 @@ import { defineConfig } from 'astro/config'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 
+import { readdirSync } from 'node:fs'
+
 import { SITE } from './src/consts.ts'
+
+/**
+ * Rutas que son índice de carpeta (`src/pages/notas/index.astro` → `/notas`).
+ * Con build.format 'preserve' el hosting las sirve con barra final, y así las
+ * declara su canonical; el sitemap tiene que decir lo mismo.
+ */
+const INDEX_ROUTES = new Set(
+  readdirSync('./src/pages', { recursive: true, withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name === 'index.astro')
+    .map((entry) => {
+      const dir = entry.parentPath.replaceAll('\\', '/').replace(/^\.?\/?src\/pages\/?/, '')
+      return dir ? `/${dir}` : ''
+    }),
+)
+
+/** Pone la barra final a las URLs de índice, para que coincidan con su canonical. */
+function withIndexSlash(href) {
+  const url = new URL(href)
+  const bare = url.pathname.replace(/\/$/, '')
+  if (INDEX_ROUTES.has(bare)) url.pathname = `${bare}/`
+  return url.href
+}
 
 export default defineConfig({
   site: SITE.url,
@@ -25,8 +49,26 @@ export default defineConfig({
         defaultLocale: 'es',
         locales: { es: 'es-CO', en: 'en' },
       },
+      // Cada URL del sitemap debe ser exactamente la del canonical de su página.
+      serialize(item) {
+        return {
+          ...item,
+          url: withIndexSlash(item.url),
+          links: item.links?.map((link) => ({ ...link, url: withIndexSlash(link.url) })),
+        }
+      },
     }),
   ],
+
+  markdown: {
+    /**
+     * Prism y no Shiki, que es el que trae Astro por defecto: Shiki colorea con
+     * atributos `style` en cada palabra, y la CSP del sitio —sin unsafe-inline—
+     * los bloquearía todos. Prism marca con clases y los colores van en
+     * global.css, con las mismas variables del tema.
+     */
+    syntaxHighlight: 'prism',
+  },
 
   vite: {
     plugins: [tailwindcss()],
@@ -35,6 +77,13 @@ export default defineConfig({
   },
 
   build: {
+    /**
+     * 'preserve' genera `notas/mi-nota.html` en vez de `notas/mi-nota/index.html`.
+     * Con el formato por defecto el hosting sirve cada pagina con barra final y
+     * redirige la que no la lleva, que es justo la que declara el canonical.
+     * Asi la URL que se anuncia es la que responde.
+     */
+    format: 'preserve',
     // Un solo archivo CSS en lugar de uno por página: menos peticiones.
     inlineStylesheets: 'auto',
   },

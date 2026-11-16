@@ -18,7 +18,7 @@ interface Props {
 const { project, copy, image, labels } = Astro.props
 ---
 
-<article class="flex flex-col overflow-hidden rounded-xl border border-line bg-bg">
+<article data-tilt class="flex flex-col overflow-hidden rounded-xl border border-line bg-bg">
   {/*
     La captura no es un enlace: los dos botones de abajo ya llevan a la demo y
     al código, y un tercer enlace al mismo sitio sólo estorba a quien navega
@@ -27,15 +27,23 @@ const { project, copy, image, labels } = Astro.props
     `Image` exige `alt` en tiempo de compilación y escribe width y height en el
     HTML, así que la reserva de espacio la hace el navegador y el CLS es 0.
   */}
-  <Image
-    src={image}
-    alt={copy.imageAlt}
-    widths={[480, 768, 1024]}
-    sizes="(min-width: 1024px) 32rem, (min-width: 640px) 90vw, 100vw"
-    loading="lazy"
-    decoding="async"
-    class="aspect-16/10 w-full border-b border-line bg-bg-subtle object-cover object-top"
-  />
+  {/*
+    La captura se inclina hacia el puntero y un brillo lo sigue (`.tilt` en
+    global.css y el script de abajo). El marco recorta, así que lo que se mueve
+    es la imagen dentro de su ventana, no la tarjeta con sus botones.
+  */}
+  <div class="tilt relative overflow-hidden border-b border-line bg-bg-subtle">
+    <Image
+      src={image}
+      alt={copy.imageAlt}
+      widths={[480, 768, 1024]}
+      sizes="(min-width: 1024px) 32rem, (min-width: 640px) 90vw, 100vw"
+      loading="lazy"
+      decoding="async"
+      class="tilt-media aspect-16/10 w-full object-cover object-top"
+    />
+    <span aria-hidden="true" class="tilt-glare"></span>
+  </div>
 
   <div class="flex flex-1 flex-col p-6 sm:p-8">
     <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
@@ -69,3 +77,50 @@ const { project, copy, image, labels } = Astro.props
     </div>
   </div>
 </article>
+
+<script>
+  /**
+   * Inclina la captura hacia el puntero. Sólo con ratón de verdad y sólo si
+   * nadie pidió menos movimiento: en táctil no hay puntero que seguir.
+   *
+   * Los valores viajan como variables CSS escritas con `style.setProperty`.
+   * Eso es CSSOM, no un atributo `style` en el HTML, así que la CSP sin
+   * unsafe-inline no lo bloquea.
+   */
+  const fine = window.matchMedia('(hover: hover) and (pointer: fine)')
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)')
+  const MAX_TILT = 5 // grados
+
+  if (fine.matches && !calm.matches) {
+    for (const card of document.querySelectorAll<HTMLElement>('[data-tilt]')) {
+      const frame = card.querySelector<HTMLElement>('.tilt')
+      if (!frame) continue
+
+      let pending = 0
+
+      card.addEventListener('pointermove', (event) => {
+        cancelAnimationFrame(pending)
+        pending = requestAnimationFrame(() => {
+          // La inclinación se mide sobre la tarjeta entera; el brillo, sobre la captura.
+          const area = card.getBoundingClientRect()
+          const x = (event.clientX - area.left) / area.width - 0.5
+          const y = (event.clientY - area.top) / area.height - 0.5
+          const shot = frame.getBoundingClientRect()
+
+          frame.dataset.active = ''
+          frame.style.setProperty('--ry', `${(x * 2 * MAX_TILT).toFixed(2)}deg`)
+          frame.style.setProperty('--rx', `${(-y * 2 * MAX_TILT).toFixed(2)}deg`)
+          frame.style.setProperty('--gx', `${(((event.clientX - shot.left) / shot.width) * 100).toFixed(1)}%`)
+          frame.style.setProperty('--gy', `${(((event.clientY - shot.top) / shot.height) * 100).toFixed(1)}%`)
+        })
+      })
+
+      card.addEventListener('pointerleave', () => {
+        cancelAnimationFrame(pending)
+        delete frame.dataset.active
+        frame.style.setProperty('--rx', '0deg')
+        frame.style.setProperty('--ry', '0deg')
+      })
+    }
+  }
+</script>

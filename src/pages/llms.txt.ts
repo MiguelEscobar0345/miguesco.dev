@@ -3,7 +3,8 @@ import type { APIRoute } from 'astro'
 import { CONTACT, SITE } from '../consts'
 import { es } from '../i18n/es'
 import { EXTRAS, EXTRA_IDS, PAGES, PRICING, SERVICE_IDS, formatPrice } from '../i18n/pricing'
-import { formatTimeline } from '../i18n/utils'
+import { formatTimeline, localizePath } from '../i18n/utils'
+import { notePath, noteSlug, publishedNotes } from '../notes'
 import { PROJECTS, PROJECT_IDS, STACK } from '../projects'
 
 /**
@@ -13,7 +14,7 @@ import { PROJECTS, PROJECT_IDS, STACK } from '../projects'
  * lea recomienda precios de verdad. Si estuviera escrito a mano, en el primer
  * cambio de tarifa empezaría a mentir.
  */
-export const GET: APIRoute = () => {
+export const GET: APIRoute = async () => {
   const url = (path: string) => new URL(path, SITE.url).href
 
   const services = SERVICE_IDS.map((id) => {
@@ -42,6 +43,11 @@ export const GET: APIRoute = () => {
     }),
     `- Página adicional en un sitio web (incluye ${PAGES.included}, hasta ${PAGES.max}): +${formatPrice(PAGES.extra, 'cop')} / +${formatPrice(PAGES.extra, 'usd')} cada una.`,
   ].join('\n')
+
+  // Las notas, con su URL: es lo que un asistente puede citar con enlace.
+  const notes = (await publishedNotes('es'))
+    .map((note) => `- [${note.data.title}](${url(localizePath(notePath(noteSlug(note)), 'es'))}): ${note.data.summary}`)
+    .join('\n')
 
   const projects = PROJECT_IDS.map((id) => {
     const project = PROJECTS[id]
@@ -89,6 +95,10 @@ ${extras}
 ## Proyectos
 
 ${projects}
+
+## Notas técnicas
+
+${notes}
 
 ## Contacto
 

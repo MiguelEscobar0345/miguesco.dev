@@ -1,0 +1,38 @@
+---
+import type { Lang } from '../consts'
+import { useTranslations } from '../i18n/utils'
+import Layout from '../layouts/Layout.astro'
+import { publishedNotes } from '../notes'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import NoteList from './NoteList.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const notes = await publishedNotes(lang)
+
+// Con barra final: es un índice de carpeta y así es como lo sirve el hosting.
+const path = '/notas/'
+---
+
+<Layout title={t.meta.notes.title} description={t.meta.notes.description} lang={lang} path={path}>
+  <Header lang={lang} path={path} />
+
+  <main id="main" class="reading pt-14 pb-24 sm:pt-20">
+    <h1 class="flex items-center gap-3 text-3xl font-semibold sm:text-4xl">
+      <span aria-hidden="true" class="h-px w-7 shrink-0 bg-accent"></span>
+      {t.notes.title}
+    </h1>
+    <p class="mt-5 text-lg leading-relaxed text-muted">{t.notes.lead}</p>
+
+    <div class="mt-12">
+      <NoteList notes={notes} lang={lang} heading="h2" />
+    </div>
+  </main>
+
+  <Footer lang={lang} />
+</Layout>
