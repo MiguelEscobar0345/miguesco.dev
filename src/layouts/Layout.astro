@@ -112,6 +112,9 @@ const schema = JSON.stringify(buildSchema({ lang, t, canonical, ogImage, isHome 
     <script is:inline>
       ;(() => {
         const root = document.documentElement
+        // Marca de que hay JavaScript: lo que depende de él ([data-needs-js])
+        // sólo se enseña con esta clase puesta.
+        root.classList.add('js')
         try {
           const theme = localStorage.getItem('theme')
           root.classList.toggle('dark', theme !== 'light')

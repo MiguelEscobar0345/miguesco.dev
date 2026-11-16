@@ -1,5 +1,6 @@
-import type { ServiceId } from './pricing'
+import type { ExperienceId } from '../experience'
 import type { ProjectId } from '../projects'
+import type { ExtraId, ServiceId } from './pricing'
 
 /**
  * Contrato del copy. `es.ts` y `en.ts` lo implementan los dos, así que si
@@ -16,8 +17,20 @@ export interface ServiceStrings {
   name: string
   tagline: string
   deliverables: string[]
-  timeline: string
   revisions: string
+}
+
+export interface ExtraStrings {
+  name: string
+  hint: string
+}
+
+export interface ExperienceStrings {
+  role: string
+  org: string
+  place: string
+  /** Logros concretos. Vacío en la formación, que no los necesita. */
+  points: string[]
 }
 
 export interface ProjectStrings {
@@ -98,6 +111,46 @@ export interface UIStrings {
     ctaBook: string
     ctaQuote: string
     notes: string[]
+    /**
+     * Plantillas de plazo. `{min}` y `{max}` salen de pricing.ts, así que el
+     * plazo de las tarjetas y el que calcula el configurador no pueden diferir.
+     */
+    timelineDays: string
+    timelineWeeks: string
+  }
+
+  estimate: {
+    title: string
+    lead: string
+    typeLegend: string
+    pagesLegend: string
+    /** `{n}` = páginas incluidas en el precio base. */
+    pagesHint: string
+    /** Línea del resumen para las páginas de más. `{n}` = cuántas. */
+    extraPages: string
+    extrasLegend: string
+    extras: Record<ExtraId, ExtraStrings>
+    /** Sustituye a los extras cuando el servicio es "desde" y no se puede calcular. */
+    customNote: string
+    summaryTitle: string
+    totalLabel: string
+    cta: string
+    ctaQuote: string
+    disclaimer: string
+    /** Piezas del mensaje de WhatsApp que arma el configurador. */
+    messageIntro: string
+    messageEstimate: string
+    messageOutro: string
+    /** `{n}` = número total de páginas. */
+    messagePages: string
+  }
+
+  experience: {
+    title: string
+    lead: string
+    present: string
+    educationLabel: string
+    items: Record<ExperienceId, ExperienceStrings>
   }
 
   projects: {

@@ -1,0 +1,497 @@
+---
+import { CONTACT, type Lang } from '../consts'
+import {
+  CURRENCY_LOCALE,
+  DEPOSIT_RATIO,
+  EXTRAS,
+  EXTRA_IDS,
+  PAGES,
+  PRICING,
+  SERVICE_IDS,
+  formatDeposit,
+  formatPrice,
+} from '../i18n/pricing'
+import { fill, formatTimeline, useTranslations } from '../i18n/utils'
+import BrandIcon from './BrandIcon.astro'
+import CurrencyToggle from './CurrencyToggle.astro'
+import Price from './Price.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+/** El servicio con el que arranca el configurador, ya calculado en el HTML. */
+const initial = SERVICE_IDS[0]
+
+/**
+ * Todo lo que el script necesita, en un atributo. Los precios y los plazos
+ * salen de pricing.ts y los textos del idioma: el navegador no trae ni un
+ * número propio, sólo suma los de aquí.
+ */
+const config = {
+  services: Object.fromEntries(
+    SERVICE_IDS.map((id) => {
+      const { cop, usd, from, timeline } = PRICING[id]
+      return [
+        id,
+        {
+          cop,
+          usd,
+          from,
+          name: t.services.items[id].name,
+          // Sólo los plazos en días se pueden sumar; los de semanas van como texto.
+          days: timeline.unit === 'days' ? [timeline.min, timeline.max] : null,
+          timeline: formatTimeline(t, timeline),
+        },
+      ]
+    }),
+  ),
+  extras: Object.fromEntries(
+    EXTRA_IDS.map((id) => [id, { ...EXTRAS[id], name: t.estimate.extras[id].name }]),
+  ),
+  pages: PAGES,
+  deposit: DEPOSIT_RATIO,
+  locale: CURRENCY_LOCALE,
+  whatsapp: CONTACT.whatsapp,
+  text: {
+    from: t.pricing.from,
+    days: t.pricing.timelineDays,
+    pages: t.estimate.messagePages,
+    extraPages: t.estimate.extraPages,
+    intro: t.estimate.messageIntro,
+    estimate: t.estimate.messageEstimate,
+    outro: t.estimate.messageOutro,
+    total: t.estimate.totalLabel,
+    cta: t.estimate.cta,
+    ctaQuote: t.estimate.ctaQuote,
+  },
+}
+
+const label = 'text-sm font-semibold tracking-wide text-ink uppercase'
+const option =
+  'cursor-pointer rounded-xl border border-line bg-bg p-4 transition-colors hover:border-line-strong has-[:checked]:border-accent has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-accent'
+---
+
+{/*
+  Sin JavaScript no hay nada que calcular, así que la sección entera se oculta
+  (`data-needs-js`). Los precios siguen estando en las tarjetas de arriba.
+*/}
+<div data-needs-js>
+  <Section id="estimate" title={t.estimate.title} lead={t.estimate.lead}>
+    <CurrencyToggle
+      slot="actions"
+      legend={t.pricing.currencyLabel}
+      label={t.a11y.toggleCurrency}
+    />
+
+    <form
+      data-estimator
+      data-config={JSON.stringify(config)}
+      class="grid gap-10 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)] lg:gap-12"
+    >
+      <div class="space-y-10">
+        <fieldset>
+          <legend class={label}>{t.estimate.typeLegend}</legend>
+          <div class="mt-4 grid gap-3 sm:grid-cols-2">
+            {
+              SERVICE_IDS.map((id) => (
+                <label class:list={[option, 'relative flex flex-col pr-10']}>
+                  <input
+                    type="radio"
+                    name="service"
+                    value={id}
+                    checked={id === initial}
+                    class="peer sr-only"
+                  />
+                  <span class="text-sm font-semibold">{t.services.items[id].name}</span>
+                  <span class="mt-1 text-xs text-muted">
+                    {PRICING[id].from && `${t.pricing.from} `}
+                    <Price price={PRICING[id]} />
+                  </span>
+                  {/* El punto del radio: la tarjeta entera es el control, esto sólo lo señala. */}
+                  <span
+                    aria-hidden="true"
+                    class="absolute top-4 right-4 size-4 rounded-full border border-line-strong transition-colors peer-checked:border-[5px] peer-checked:border-accent"
+                  />
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        <fieldset data-pages hidden>
+          <legend class={label}>{t.estimate.pagesLegend}</legend>
+          <div class="mt-4 flex items-center gap-4">
+            <input
+              type="range"
+              name="pages"
+              min={PAGES.min}
+              max={PAGES.max}
+              step="1"
+              value={PAGES.included}
+              aria-describedby="pages-hint"
+              class="h-6 w-full cursor-pointer accent-accent"
+            />
+            <output data-pages-output class="tabular w-8 text-right text-xl font-semibold">
+              {PAGES.included}
+            </output>
+          </div>
+          <p id="pages-hint" class="mt-2 text-sm text-muted">
+            {fill(t.estimate.pagesHint, { n: PAGES.included })}
+          </p>
+        </fieldset>
+
+        <fieldset data-extras>
+          <legend class={label}>{t.estimate.extrasLegend}</legend>
+          <div class="mt-4 space-y-3">
+            {
+              EXTRA_IDS.map((id) => (
+                <label class:list={[option, 'flex items-start gap-3']}>
+                  <input
+                    type="checkbox"
+                    name="extra"
+                    value={id}
+                    class="mt-0.5 size-4 shrink-0 cursor-pointer accent-accent"
+                  />
+                  {/* En móvil el precio baja a su propia línea: en la misma fila
+                      dejaba la descripción en una columna de tres palabras. */}
+                  <span class="flex flex-1 flex-col gap-1.5 sm:flex-row sm:justify-between sm:gap-4">
+                    <span>
+                      <span class="block text-sm font-semibold">{t.estimate.extras[id].name}</span>
+                      <span class="mt-0.5 block text-sm text-muted">
+                        {t.estimate.extras[id].hint}
+                      </span>
+                    </span>
+                    <span class="text-sm whitespace-nowrap text-muted">
+                      +{EXTRAS[id].from && ` ${t.pricing.from}`} <Price price={EXTRAS[id]} />
+                    </span>
+                  </span>
+                </label>
+              ))
+            }
+          </div>
+        </fieldset>
+
+        {/* Para lo que no se puede calcular con casillas, se dice así de claro. */}
+        <p
+          data-custom-note
+          hidden
+          class="max-w-xl border-l-2 border-accent pl-4 text-sm leading-relaxed text-muted"
+        >
+          {t.estimate.customNote}
+        </p>
+      </div>
+
+      <div
+        id="estimate-summary"
+        data-summary
+        class="self-start rounded-xl border border-line bg-bg-subtle p-6 sm:p-7 lg:sticky lg:top-24"
+      >
+        <h3 class={label}>{t.estimate.summaryTitle}</h3>
+
+        {/*
+          Las líneas fijas van todas en el HTML, con el importe ya formateado, y
+          el script sólo decide cuáles se ven. Así el formato de un precio se
+          escribe en un único sitio.
+        */}
+        <ul class="mt-5 space-y-2.5 text-sm">
+          {
+            SERVICE_IDS.map((id) => (
+              <li
+                data-line={`service:${id}`}
+                hidden={id !== initial}
+                class="flex justify-between gap-4"
+              >
+                <span>{t.services.items[id].name}</span>
+                <Price price={PRICING[id]} class="text-muted" />
+              </li>
+            ))
+          }
+          <li data-line="pages" hidden class="flex justify-between gap-4">
+            <span data-pages-label></span>
+            <span class="tabular text-muted">
+              +<span class="price-cop" data-pages-cop></span><span
+                class="price-usd"
+                data-pages-usd></span>
+            </span>
+          </li>
+          {
+            EXTRA_IDS.map((id) => (
+              <li data-line={`extra:${id}`} hidden class="flex justify-between gap-4">
+                <span>{t.estimate.extras[id].name}</span>
+                <span class="whitespace-nowrap text-muted">
+                  +<Price price={EXTRAS[id]} />
+                </span>
+              </li>
+            ))
+          }
+        </ul>
+
+        <div class="mt-5 border-t border-line pt-5">
+          {/*
+            El número que se ve sube y baja cuadro a cuadro, y eso leído en voz
+            alta sería una metralleta. Por eso lo visible va con aria-hidden y
+            el lector de pantalla recibe, una sola vez, el resultado final.
+          */}
+          <p aria-hidden="true" class="flex flex-wrap items-baseline justify-between gap-x-4">
+            <span class="text-sm text-muted">{t.estimate.totalLabel}</span>
+            <span class="text-right">
+              <span data-from hidden class="text-sm text-muted">{t.pricing.from} </span>
+              <span class="tabular text-2xl font-semibold sm:text-3xl">
+                <span class="price-cop" data-total-cop>{formatPrice(PRICING[initial], 'cop')}</span>
+                <span class="price-usd" data-total-usd>{formatPrice(PRICING[initial], 'usd')}</span>
+              </span>
+            </span>
+          </p>
+          <output data-announce aria-live="polite" class="sr-only"></output>
+
+          <dl class="mt-4 space-y-2 text-sm">
+            <div class="flex justify-between gap-4">
+              <dt class="text-muted">{t.pricing.timelineLabel}</dt>
+              <dd data-timeline class="text-right">
+                {formatTimeline(t, PRICING[initial].timeline)}
+              </dd>
+            </div>
+            <div class="flex justify-between gap-4">
+              <dt class="text-muted">
+                {t.pricing.depositLabel} · {Math.round(DEPOSIT_RATIO * 100)}%
+              </dt>
+              <dd class="tabular text-right">
+                <span class="price-cop" data-deposit-cop>
+                  {formatDeposit(PRICING[initial], 'cop')}
+                </span>
+                <span class="price-usd" data-deposit-usd>
+                  {formatDeposit(PRICING[initial], 'usd')}
+                </span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+
+        <a
+          data-cta
+          href={`https://wa.me/${CONTACT.whatsapp}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-accent px-4 py-2.5 text-sm font-semibold text-accent-fg transition-colors duration-150 hover:bg-accent-hover"
+        >
+          <BrandIcon name="whatsapp" class="size-4" />
+          <span data-cta-label>{t.estimate.cta}</span>
+          <span class="sr-only">({t.a11y.opensInNewTab})</span>
+        </a>
+
+        <p class="mt-4 text-xs leading-relaxed text-muted">{t.estimate.disclaimer}</p>
+      </div>
+
+      {/*
+        En móvil el resumen queda debajo de todas las opciones, así que al marcar
+        una casilla el total cambiaba fuera de pantalla. Esta barra lo mantiene a
+        la vista mientras se elige, y lleva al resumen al tocarla. El script la
+        enseña sólo cuando el configurador está en pantalla y el resumen no.
+      */}
+      <a
+        data-bar
+        hidden
+        href="#estimate-summary"
+        class="fixed inset-x-0 bottom-0 z-30 flex items-baseline justify-between gap-4 border-t border-line bg-bg/95 px-6 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-md lg:hidden"
+      >
+        <span class="text-sm text-muted">{t.estimate.summaryTitle}</span>
+        <span>
+          <span data-from hidden class="text-xs text-muted">{t.pricing.from} </span>
+          <span class="tabular text-lg font-semibold">
+            <span class="price-cop" data-total-cop>{formatPrice(PRICING[initial], 'cop')}</span>
+            <span class="price-usd" data-total-usd>{formatPrice(PRICING[initial], 'usd')}</span>
+          </span>
+        </span>
+      </a>
+    </form>
+  </Section>
+</div>
+
+<script>
+  type Currency = 'cop' | 'usd'
+  type Money = Record<Currency, number>
+
+  interface Config {
+    services: Record<
+      string,
+      Money & { from: boolean; name: string; days: [number, number] | null; timeline: string }
+    >
+    extras: Record<string, Money & { from: boolean; name: string; days: [number, number] }>
+    pages: { included: number; extra: Money & { days: number } }
+    deposit: number
+    locale: Record<Currency, string>
+    whatsapp: string
+    text: Record<string, string>
+  }
+
+  const form = document.querySelector<HTMLFormElement>('[data-estimator]')
+
+  if (form) {
+    const cfg = JSON.parse(form.dataset.config ?? '{}') as Config
+    const root = document.documentElement
+    const CURRENCIES: Currency[] = ['cop', 'usd']
+
+    const get = <T extends HTMLElement>(selector: string) => form.querySelector<T>(selector)!
+    // El total y el "desde" están dos veces: en el resumen y en la barra del móvil.
+    const all = (selector: string) => form.querySelectorAll<HTMLElement>(selector)
+
+    // El mismo formato que escribe el servidor: `$1.800.000 COP`, `$450 USD`.
+    const formats = {
+      cop: new Intl.NumberFormat(cfg.locale.cop, { maximumFractionDigits: 0 }),
+      usd: new Intl.NumberFormat(cfg.locale.usd, { maximumFractionDigits: 0 }),
+    }
+    const money = (amount: number, currency: Currency) =>
+      `$${formats[currency].format(amount)} ${currency.toUpperCase()}`
+
+    const fill = (template: string, values: Record<string, number | string>) =>
+      template.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key]))
+
+    const paint = (name: string, value: Money) => {
+      for (const currency of CURRENCIES) {
+        for (const node of all(`[data-${name}-${currency}]`)) {
+          node.textContent = money(value[currency], currency)
+        }
+      }
+    }
+
+    // ── El número que cuenta ───────────────────────────────────────────────
+    const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // Mientras cuenta, redondea a pasos "de billete": se lee mejor que 2.137.412.
+    const STEP: Money = { cop: 10_000, usd: 5 }
+    const first = cfg.services[new FormData(form).get('service') as string]
+    let shown: Money = { cop: first.cop, usd: first.usd }
+    let frame = 0
+
+    function countTo(target: Money) {
+      cancelAnimationFrame(frame)
+      const from = { ...shown }
+      const began = performance.now()
+
+      const tick = (now: number) => {
+        const progress = calm ? 1 : Math.min(1, (now - began) / 380)
+        const eased = 1 - (1 - progress) ** 3
+
+        for (const currency of CURRENCIES) {
+          const value = from[currency] + (target[currency] - from[currency]) * eased
+          shown[currency] =
+            progress === 1 ? target[currency] : Math.round(value / STEP[currency]) * STEP[currency]
+        }
+        paint('total', shown)
+
+        if (progress < 1) frame = requestAnimationFrame(tick)
+      }
+
+      frame = requestAnimationFrame(tick)
+    }
+
+    // ── El cálculo ─────────────────────────────────────────────────────────
+    function update() {
+      const data = new FormData(form!)
+      const id = data.get('service') as string
+      const service = cfg.services[id]
+      const configurable = !service.from
+
+      const pages = id === 'website' ? Number(data.get('pages')) : 0
+      const extraPages = Math.max(0, pages - cfg.pages.included)
+      const extras = configurable ? (data.getAll('extra') as string[]) : []
+
+      const total: Money = { cop: service.cop, usd: service.usd }
+      const days = service.days ? [...service.days] : null
+      const lines = new Set([`service:${id}`])
+      const bullets = [service.name]
+      let from = service.from
+
+      if (pages) bullets.push(fill(cfg.text.pages, { n: pages }))
+
+      if (extraPages) {
+        const cost: Money = {
+          cop: extraPages * cfg.pages.extra.cop,
+          usd: extraPages * cfg.pages.extra.usd,
+        }
+        for (const currency of CURRENCIES) total[currency] += cost[currency]
+        if (days) for (const i of [0, 1]) days[i] += extraPages * cfg.pages.extra.days
+        lines.add('pages')
+        get('[data-pages-label]').textContent = fill(cfg.text.extraPages, { n: extraPages })
+        paint('pages', cost)
+      }
+
+      for (const key of extras) {
+        const extra = cfg.extras[key]
+        for (const currency of CURRENCIES) total[currency] += extra[currency]
+        if (days) for (const i of [0, 1]) days[i] += extra.days[i]
+        from ||= extra.from
+        lines.add(`extra:${key}`)
+        bullets.push(extra.name)
+      }
+
+      // Qué se ve
+      get('[data-pages]').hidden = id !== 'website'
+      get('[data-extras]').hidden = !configurable
+      get('[data-custom-note]').hidden = configurable
+      get('[data-pages-output]').textContent = String(pages || cfg.pages.included)
+      for (const line of form!.querySelectorAll<HTMLElement>('[data-line]')) {
+        line.hidden = !lines.has(line.dataset.line!)
+      }
+
+      // Qué dice
+      const timeline = days
+        ? fill(cfg.text.days, { min: days[0], max: days[1] })
+        : service.timeline
+      const prefix = from ? `${cfg.text.from} ` : ''
+
+      for (const node of all('[data-from]')) node.hidden = !from
+      get('[data-timeline]').textContent = timeline
+      get('[data-cta-label]').textContent = from ? cfg.text.ctaQuote : cfg.text.cta
+      paint('deposit', {
+        cop: Math.round(total.cop * cfg.deposit),
+        usd: Math.round(total.usd * cfg.deposit),
+      })
+
+      // El mensaje se escribe en la moneda que el visitante está mirando.
+      const currency: Currency = root.dataset.currency === 'usd' ? 'usd' : 'cop'
+      const amount = `${prefix}${money(total[currency], currency)}`
+
+      get('[data-announce]').textContent = `${cfg.text.total}: ${amount} · ${timeline}`
+      get<HTMLAnchorElement>('[data-cta]').href =
+        `https://wa.me/${cfg.whatsapp}?text=` +
+        encodeURIComponent(
+          [
+            cfg.text.intro,
+            '',
+            ...bullets.map((bullet) => `• ${bullet}`),
+            '',
+            `${cfg.text.estimate}: ${amount} · ${timeline}`,
+            '',
+            cfg.text.outro,
+            '',
+          ].join('\n'),
+        )
+
+      countTo(total)
+    }
+
+    form.addEventListener('input', update)
+    form.addEventListener('submit', (event) => event.preventDefault())
+
+    // Si cambia la moneda, el mensaje de WhatsApp tiene que cambiar con ella.
+    new MutationObserver(update).observe(root, { attributeFilter: ['data-currency'] })
+
+    // La barra del móvil: visible mientras se elige, fuera cuando ya se ve el resumen.
+    const bar = get('[data-bar]')
+    const summary = get('[data-summary]')
+    const onScreen = new Map<Element, boolean>()
+    const watcher = new IntersectionObserver((entries) => {
+      for (const entry of entries) onScreen.set(entry.target, entry.isIntersecting)
+      bar.hidden = !onScreen.get(form) || Boolean(onScreen.get(summary))
+    })
+    watcher.observe(form)
+    watcher.observe(summary)
+
+    update()
+  }
+</script>

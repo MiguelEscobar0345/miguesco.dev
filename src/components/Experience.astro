@@ -1,0 +1,100 @@
+---
+import { LOCALE_TAG, type Lang } from '../consts'
+import { EXPERIENCE, EXPERIENCE_IDS } from '../experience'
+import { useTranslations } from '../i18n/utils'
+import Icon from './Icon.astro'
+import Section from './Section.astro'
+
+interface Props {
+  lang: Lang
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+
+// "dic 2025" / "Dec 2025". En UTC, para que el mes no dependa de dónde se compile.
+const monthYear = new Intl.DateTimeFormat(LOCALE_TAG[lang], {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+})
+
+/**
+ * Se arma con las partes en vez de usar el formato entero porque en español
+ * devuelve "dic de 2025", y ese "de" hace que el rango no quepa en una línea.
+ */
+function format(yearMonth: string): string {
+  const parts = monthYear.formatToParts(new Date(`${yearMonth}-01T00:00:00Z`))
+  const pick = (type: string) => parts.find((part) => part.type === type)?.value ?? ''
+  return `${pick('month').replace('.', '')} ${pick('year')}`
+}
+---
+
+<Section id="experience" title={t.experience.title} lead={t.experience.lead}>
+  {/*
+    Una lista ordenada de verdad: el orden —lo más reciente primero— es
+    información, no decoración. La línea y la entrada de cada etapa se animan
+    con el scroll en CSS puro (ver `.timeline` y `.reveal` en global.css).
+  */}
+  <ol class="timeline relative">
+    {
+      EXPERIENCE_IDS.map((id) => {
+        const entry = EXPERIENCE[id]
+        const copy = t.experience.items[id]
+
+        return (
+          <li class="reveal relative grid gap-x-10 gap-y-2 pb-12 pl-8 last:pb-0 md:grid-cols-[10rem_minmax(0,1fr)] md:pl-10">
+            <span
+              aria-hidden="true"
+              class="absolute top-1.5 left-0 size-2.5 rounded-full bg-accent ring-4 ring-bg"
+            />
+
+            <p class="pt-0.5 font-mono text-xs whitespace-nowrap text-muted">
+              <time datetime={entry.start}>{format(entry.start)}</time>
+              {' — '}
+              {entry.end ? (
+                <time datetime={entry.end}>{format(entry.end)}</time>
+              ) : (
+                <span class="text-accent">{t.experience.present}</span>
+              )}
+            </p>
+
+            <div>
+              {entry.kind === 'education' && (
+                <p class="mb-1 font-mono text-xs tracking-wide text-muted uppercase">
+                  {t.experience.educationLabel}
+                </p>
+              )}
+              <h3 class="text-lg font-semibold">{copy.role}</h3>
+              <p class="mt-1 text-sm">
+                <span class="font-semibold text-accent">{copy.org}</span>
+                <span class="text-muted"> · {copy.place}</span>
+              </p>
+
+              {copy.points.length > 0 && (
+                <ul class="mt-4 max-w-2xl space-y-2.5 text-sm">
+                  {copy.points.map((point) => (
+                    <li class="flex gap-2.5 leading-relaxed">
+                      <Icon name="check" class="mt-1 size-4 shrink-0 text-accent" />
+                      <span class="text-muted">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+
+              {entry.stack.length > 0 && (
+                <ul class="mt-5 flex flex-wrap gap-2">
+                  {entry.stack.map((tech) => (
+                    <li class="rounded-md border border-line bg-bg-subtle px-2.5 py-1 font-mono text-xs text-muted">
+                      {tech}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </li>
+        )
+      })
+    }
+  </ol>
+</Section>

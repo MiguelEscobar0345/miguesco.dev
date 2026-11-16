@@ -2,7 +2,8 @@ import type { APIRoute } from 'astro'
 
 import { CONTACT, SITE } from '../consts'
 import { es } from '../i18n/es'
-import { PRICING, SERVICE_IDS, formatPrice } from '../i18n/pricing'
+import { EXTRAS, EXTRA_IDS, PAGES, PRICING, SERVICE_IDS, formatPrice } from '../i18n/pricing'
+import { formatTimeline } from '../i18n/utils'
 import { PROJECTS, PROJECT_IDS, STACK } from '../projects'
 
 /**
@@ -26,11 +27,21 @@ export const GET: APIRoute = () => {
       copy.tagline,
       '',
       `- Precio: ${prefix}${formatPrice(price, 'cop')} / ${prefix}${formatPrice(price, 'usd')}`,
-      `- Entrega: ${copy.timeline}`,
+      `- Entrega: ${formatTimeline(es, price.timeline)}`,
       `- Incluye: ${copy.revisions}`,
       ...copy.deliverables.map((item) => `- ${item}`),
     ].join('\n')
   }).join('\n\n')
+
+  // Los extras del configurador, con sus precios reales.
+  const extras = [
+    ...EXTRA_IDS.map((id) => {
+      const extra = EXTRAS[id]
+      const prefix = extra.from ? 'desde ' : ''
+      return `- ${es.estimate.extras[id].name}: +${prefix}${formatPrice(extra, 'cop')} / +${prefix}${formatPrice(extra, 'usd')}. ${es.estimate.extras[id].hint}`
+    }),
+    `- Página adicional en un sitio web (incluye ${PAGES.included}, hasta ${PAGES.max}): +${formatPrice(PAGES.extra, 'cop')} / +${formatPrice(PAGES.extra, 'usd')} cada una.`,
+  ].join('\n')
 
   const projects = PROJECT_IDS.map((id) => {
     const project = PROJECTS[id]
@@ -68,6 +79,12 @@ Los precios están publicados. Se reserva con el 50% de anticipo y el resto se p
 El código se entrega en el GitHub del cliente. El dominio y el hosting los contrata el cliente a su nombre.
 
 ${services}
+
+### Extras para landing y sitio web
+
+En ${url('/#estimate')} hay un configurador que suma estos extras y calcula precio y plazo:
+
+${extras}
 
 ## Proyectos
 

@@ -74,7 +74,6 @@ export const en: UIStrings = {
           'WhatsApp button or contact form built in',
           'Deployment, domain hookup and basic analytics',
         ],
-        timeline: '5 to 7 business days',
         revisions: '1 round of revisions',
       },
       website: {
@@ -86,7 +85,6 @@ export const en: UIStrings = {
           'Metadata, sitemap and structured data in place',
           'Verified on mobile, tablet and desktop',
         ],
-        timeline: '10 to 14 business days',
         revisions: '2 rounds of revisions',
       },
       webapp: {
@@ -98,7 +96,6 @@ export const en: UIStrings = {
           'Authentication, roles and an admin panel',
           'Integration with the APIs and services you already use',
         ],
-        timeline: '3 to 5 weeks',
         revisions: 'Revisions agreed per project',
       },
       ai: {
@@ -110,7 +107,6 @@ export const en: UIStrings = {
           'Workflows with Power Automate, n8n or custom code',
           "We measure the hours before and after: if it doesn't save time, it isn't worth it",
         ],
-        timeline: '1 to 3 weeks',
         revisions: 'Revisions agreed per project',
       },
     },
@@ -131,6 +127,79 @@ export const en: UIStrings = {
       'You buy the domain and hosting directly, in your own name. They usually run 15 to 60 USD a year and I take no cut of that.',
       "If your project doesn't fit any of the four boxes, tell me anyway and I'll give you a number.",
     ],
+    timelineDays: '{min} to {max} business days',
+    timelineWeeks: '{min} to {max} weeks',
+  },
+
+  estimate: {
+    title: 'Build your estimate',
+    lead: 'Tick what you need. The price and the timeline are worked out right here, and the summary goes with you to WhatsApp.',
+    typeLegend: 'Type of project',
+    pagesLegend: 'Pages',
+    pagesHint: 'Up to {n} are included. Each extra page adds to the price and one day to the timeline.',
+    extraPages: 'Extra pages × {n}',
+    extrasLegend: 'Extras',
+    extras: {
+      language: {
+        name: 'Second language',
+        hint: 'The whole site in Spanish and English, with a switcher.',
+      },
+      copy: {
+        name: 'Copywriting',
+        hint: 'I write the copy myself, from a conversation with you.',
+      },
+      assistant: {
+        name: 'AI assistant',
+        hint: 'A chat that answers your customers from your own information.',
+      },
+    },
+    customNote:
+      'This one cannot be quoted with three checkboxes. The number is the starting point: you get the fixed price in writing after a 30-minute call.',
+    summaryTitle: 'Your estimate',
+    totalLabel: 'Total',
+    cta: 'Send on WhatsApp',
+    ctaQuote: 'Request a quote on WhatsApp',
+    disclaimer:
+      'This is an estimate. The final price is set in writing in the proposal before you pay anything.',
+    messageIntro: 'Hi Miguel, I put this estimate together on miguesco.dev:',
+    messageEstimate: 'Estimate',
+    messageOutro: 'My business is:',
+    messagePages: '{n} pages',
+  },
+
+  experience: {
+    title: 'Experience',
+    lead: 'Three years shipping product: first inside a multinational, now automating a company from the inside.',
+    present: 'Present',
+    educationLabel: 'Education',
+    items: {
+      trestrigos: {
+        role: 'Web UI & Frontend Developer',
+        org: 'Tres Trigos',
+        place: 'Medellín',
+        points: [
+          'Designed and built the ticketing support app on PowerApps, Power Automate and Dataverse. Team productivity went up 80%.',
+          'Automated workflows for the accounting team, removing manual steps and risk from their processes.',
+          'Custom pages in HTML, CSS and JavaScript, integrated with WordPress.',
+        ],
+      },
+      globant: {
+        role: 'Web UI Developer',
+        org: 'Globant',
+        place: 'Medellín · remote teams, in English',
+        points: [
+          'Joined as an intern and was promoted to in-house developer.',
+          'OurSpaces, a full-stack tool for booking meeting rooms: React components with Vite, client-side filtering and a Node and Express API.',
+          'Mobile features in React Native for Builder.ai, plus proofs of concept for client visits and hackathons.',
+        ],
+      },
+      sena: {
+        role: 'Technologist degree in Software Analysis and Development',
+        org: 'SENA',
+        place: 'Medellín',
+        points: [],
+      },
+    },
   },
 
   projects: {
@@ -161,9 +230,8 @@ export const en: UIStrings = {
   about: {
     title: 'About me',
     paragraphs: [
-      'I studied software analysis and development at SENA and joined Globant as an intern. I stayed: they promoted me to in-house developer after I contributed to internal tools, client-facing applications and innovation initiatives, working in English with remote teams.',
-      'There I built OurSpaces, a full-stack tool for managing meeting rooms —reusable React components, client-side filtering and a Node and Express API— plus mobile features in React Native for Builder.ai.',
-      'Today, at Tres Trigos, I build support applications with PowerApps and Power Automate. The ticketing app I designed raised the team’s productivity by 80%. That number is what interests me about this work: not the stack, but what changes after you install it.',
+      'From every project I keep a single question: what changed after it was installed. The stack matters less than that number, which is why I ask how we will measure success before I write any code.',
+      'I work in Spanish and in English (C1) —at Globant the day-to-day was with remote teams— and I prefer to take on few projects at a time so I can reply the same day.',
       'Outside the office I am deep in LLMs, RAG assistants and agents. It is what I most enjoy building, which is why I offer it as a service.',
     ],
     stackTitle: 'What I work with',

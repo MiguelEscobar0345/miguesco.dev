@@ -2,7 +2,7 @@
 import type { Lang } from '../consts'
 import { whatsappUrl } from '../consts'
 import { PRICING, SERVICE_IDS } from '../i18n/pricing'
-import { useTranslations } from '../i18n/utils'
+import { formatTimeline, useTranslations } from '../i18n/utils'
 import Button from './Button.astro'
 import CurrencyToggle from './CurrencyToggle.astro'
 import Icon from './Icon.astro'
@@ -47,7 +47,7 @@ const t = useTranslations(lang)
               <div class="flex items-center gap-2.5">
                 <Icon name="clock" class="size-4 shrink-0 text-accent" />
                 <dt class="sr-only">{t.pricing.timelineLabel}</dt>
-                <dd class="text-muted">{service.timeline}</dd>
+                <dd class="text-muted">{formatTimeline(t, price.timeline)}</dd>
               </div>
               <div class="flex items-center gap-2.5">
                 <Icon name="loop" class="size-4 shrink-0 text-accent" />

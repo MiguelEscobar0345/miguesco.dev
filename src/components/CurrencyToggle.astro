@@ -9,23 +9,18 @@ interface Props {
 const { legend, label } = Astro.props
 ---
 
+{/* Sin JavaScript el selector no haría nada; mejor no enseñar un botón muerto.
+    `data-needs-js` lo oculta mientras <html> no lleve la clase `js`. El precio
+    en pesos, que es el que trae el HTML por defecto, se sigue viendo. */}
 <div
   role="group"
   aria-label={label}
+  data-needs-js
   class="inline-flex items-center gap-3 text-sm"
 >
   <span class="text-muted">{legend}</span>
-  {/* Sin JavaScript el selector no haría nada; mejor no enseñar un botón muerto.
-      El precio en pesos, que es el que trae el HTML por defecto, se sigue viendo. */}
-  <noscript>
-    <style>
-      [data-currency-switch] {
-        display: none;
-      }
-    </style>
-  </noscript>
 
-  <div data-currency-switch class="inline-flex rounded-lg border border-line p-0.5">
+  <div class="inline-flex rounded-lg border border-line p-0.5">
     {
       CURRENCIES.map((currency) => (
         <button

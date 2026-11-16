@@ -1,8 +1,9 @@
 ---
-import { formatDeposit, formatPrice, type ServicePrice } from '../i18n/pricing'
+import { formatDeposit, formatPrice } from '../i18n/pricing'
 
 interface Props {
-  price: ServicePrice
+  /** Cualquier cosa con las dos monedas: un servicio, un extra del configurador… */
+  price: { cop: number; usd: number }
   /** 'total' muestra el precio del servicio; 'deposit', el 50% del anticipo. */
   kind?: 'total' | 'deposit'
   class?: string

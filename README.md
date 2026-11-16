@@ -49,6 +49,23 @@ npm run dev
 | Proyectos (enlaces, stack) | `src/projects.ts` |
 | Colores y tipografía | `src/styles/global.css` |
 | Casos de estudio | `src/content/cases/{es,en}/*.md` |
+| Extras y páginas del configurador | `src/i18n/pricing.ts` (`EXTRAS`, `PAGES`) |
+| Trayectoria (fechas y stack) | `src/experience.ts`; los textos, en `es.ts` y `en.ts` |
+
+## El configurador de presupuesto
+
+Vive en `src/components/Estimator.astro` y no tiene ni un número propio: los
+precios base salen de `PRICING`, los extras de `EXTRAS` y las páginas de
+`PAGES`, todo en `src/i18n/pricing.ts`. Cambiar una tarifa ahí la cambia a la
+vez en las tarjetas, en el configurador, en el `llms.txt` y en el JSON-LD.
+
+Los servicios con precio «desde» (web app, automatización) no se calculan: el
+configurador enseña el precio de partida y manda a pedir cotización. Un extra
+«desde» —el asistente con IA— contagia el «desde» al total.
+
+Sin JavaScript la sección entera se oculta (`data-needs-js`); los precios siguen
+en las tarjetas. El total que cuenta en pantalla va con `aria-hidden` y el
+lector de pantalla recibe una sola vez el resultado final.
 
 ## Añadir un caso de estudio
 

@@ -1,4 +1,5 @@
 import { DEFAULT_LANG, type Lang } from '../consts'
+import type { Timeline } from './pricing'
 import type { UIStrings } from './types'
 import { es } from './es'
 import { en } from './en'
@@ -13,6 +14,22 @@ export const LANG_LABEL: Record<Lang, string> = { es: 'ES', en: 'EN' }
 
 export function useTranslations(lang: Lang): UIStrings {
   return ui[lang]
+}
+
+/** Sustituye `{clave}` en una plantilla: `fill('{n} páginas', { n: 8 })`. */
+export function fill(template: string, values: Record<string, string | number>): string {
+  return template.replace(/\{(\w+)\}/g, (match, key: string) =>
+    key in values ? String(values[key]) : match,
+  )
+}
+
+/**
+ * El plazo en palabras. Los números vienen de pricing.ts y la frase del idioma,
+ * así que las tarjetas, el configurador y el llms.txt dicen siempre lo mismo.
+ */
+export function formatTimeline(t: UIStrings, timeline: Timeline): string {
+  const template = timeline.unit === 'days' ? t.pricing.timelineDays : t.pricing.timelineWeeks
+  return fill(template, { min: timeline.min, max: timeline.max })
 }
 
 /**

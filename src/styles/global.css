@@ -166,6 +166,83 @@
     font-size: clamp(2.125rem, 1.35rem + 3.4vw, 3.5rem);
     line-height: 1.08;
   }
+
+  /* Lo que no sirve sin JavaScript no se enseña sin JavaScript. La clase `js`
+     la pone el script del <head> antes de pintar, así que no hay parpadeo. */
+  html:not(.js) [data-needs-js] {
+    display: none;
+  }
+
+  /* Línea de la trayectoria: una pauta gris de fondo y, encima, el acento. */
+  .timeline::before,
+  .timeline::after {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0;
+    left: calc(0.3125rem - 0.5px);
+    width: 1px;
+    background-color: var(--border);
+  }
+
+  .timeline::after {
+    background-color: var(--accent);
+    transform-origin: top;
+  }
+}
+
+/*
+  Movimiento ligado al scroll, en CSS puro: ni una línea de JavaScript.
+
+  Va dentro de `no-preference` porque una animación gobernada por el scroll no
+  tiene duración que acortar: la regla general de abajo no la frenaría, y quien
+  pidió menos movimiento se la comería igual. Y dentro de `@supports`, para que
+  el navegador que no lo entienda vea la página quieta en vez de vacía.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    /* Cada etapa sube y aparece mientras entra en pantalla. */
+    .reveal {
+      animation: reveal linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 55%;
+    }
+
+    /* La línea de acento se va dibujando a medida que se recorre la lista. */
+    .timeline::after {
+      animation: draw linear both;
+      animation-timeline: view();
+      animation-range: entry 25% exit 45%;
+    }
+  }
+
+  /* Las líneas del presupuesto entran con suavidad al marcar una casilla.
+     `@starting-style` da el estado inicial al pasar de oculto a visible. */
+  [data-line] {
+    transition:
+      opacity 0.25s ease,
+      translate 0.25s ease;
+  }
+
+  @starting-style {
+    [data-line] {
+      opacity: 0;
+      translate: 0 -0.25rem;
+    }
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    translate: 0 1.25rem;
+  }
+}
+
+@keyframes draw {
+  from {
+    scale: 1 0;
+  }
 }
 
 /* Quien pide menos movimiento, recibe menos movimiento. */
