@@ -28,11 +28,17 @@ const links = [
   { href: `${home}#pricing`, label: t.nav.pricing },
   ...(hasCases ? [{ href: `${home}#cases`, label: t.nav.cases }] : []),
   { href: `${home}#projects`, label: t.nav.projects },
-  // El único que no es un ancla de la portada: las notas tienen página propia.
-  { href: localizePath('/notas/', lang), label: t.nav.notes },
   { href: `${home}#about`, label: t.nav.about },
   { href: `${home}#contact`, label: t.nav.contact },
 ]
+
+/**
+ * Las notas no son una sección de la portada: son otra página, y este enlace
+ * es la única puerta. Por eso va aparte de las anclas y se ve también en móvil,
+ * donde el resto del menú está en el pie.
+ */
+const notes = localizePath('/notas/', lang)
+const inNotes = path.startsWith('/notas')
 ---
 
 <header
@@ -46,13 +52,14 @@ const links = [
       migue<span class="text-accent">sco</span>
     </a>
 
-    {/* Con siete enlaces el menú ya no cabe en una tablet en vertical: aparece
-        desde `lg`, y por debajo la navegación completa está en el pie. */}
-    <nav aria-label={t.a11y.mainNav} class="hidden lg:block">
+    {/* Con siete enlaces el menú ya no cabe en una tablet en vertical: las
+        anclas aparecen desde `lg`, y por debajo están en el pie. «Notas» se
+        queda siempre, pegado a los botones de la derecha. */}
+    <nav aria-label={t.a11y.mainNav} class="ml-auto lg:ml-0">
       <ul class="flex items-center gap-6 text-sm">
         {
           links.map((link) => (
-            <li>
+            <li class="hidden lg:block">
               <a
                 href={link.href}
                 class="text-muted transition-colors hover:text-accent"
@@ -62,6 +69,18 @@ const links = [
             </li>
           ))
         }
+        <li class="lg:border-l lg:border-line lg:pl-6">
+          <a
+            href={notes}
+            aria-current={inNotes ? 'page' : undefined}
+            class:list={[
+              'transition-colors hover:text-accent',
+              inNotes ? 'text-ink' : 'text-muted',
+            ]}
+          >
+            {t.nav.notes}
+          </a>
+        </li>
       </ul>
     </nav>
 

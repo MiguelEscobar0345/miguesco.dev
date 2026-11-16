@@ -115,9 +115,10 @@ un proyecto (`MePulse`, `MeAtmos`, `miguesco.dev`) o un tema (`CSS`,
 
 Si falta la versión de un idioma, el build falla y dice cuál: así no se publica
 un `hreflang` que apunta a una página que no existe. Con `draft: true` la nota
-no sale. Las tres más recientes aparecen en la portada y todas en `/notas/`. El
-orden lo da `date`; si dos notas salen el mismo día, ponle hora
-(`2026-11-16T18:00:00Z`) y la más tardía va primero.
+no sale. Las notas no aparecen en la portada: viven en `/notas/` y sólo se llega
+por «Notas» en el menú, que por eso se ve también en móvil. El orden lo da
+`date`; si dos notas salen el mismo día, ponle hora (`2026-11-16T18:00:00Z`) y
+la más tardía va primero.
 
 Para enlazar una nota desde otra, la ruta lleva el idioma a mano: `/notas/otra`
 en el archivo español y `/en/notas/otra` en el inglés.

@@ -7,11 +7,9 @@ import Icon from './Icon.astro'
 interface Props {
   notes: NoteEntry[]
   lang: Lang
-  /** h3 dentro de una sección de la portada; h2 en la página que las lista. */
-  heading?: 'h2' | 'h3'
 }
 
-const { notes, lang, heading: Heading = 'h3' } = Astro.props
+const { notes, lang } = Astro.props
 ---
 
 {/* Una nota por fila y nada más: fecha, de dónde sale, título y de qué va. */}
@@ -32,9 +30,9 @@ const { notes, lang, heading: Heading = 'h3' } = Astro.props
           </span>
 
           <span>
-            <Heading class="text-lg font-semibold transition-colors group-hover:text-accent">
+            <h2 class="text-lg font-semibold transition-colors group-hover:text-accent">
               {note.data.title}
-            </Heading>
+            </h2>
             <span class="mt-1.5 block text-sm leading-relaxed text-muted">
               {note.data.summary}
             </span>

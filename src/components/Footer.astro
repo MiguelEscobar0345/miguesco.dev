@@ -21,10 +21,10 @@ const links = [
   { href: `${home}#pricing`, label: t.nav.pricing },
   ...(hasCases ? [{ href: `${home}#cases`, label: t.nav.cases }] : []),
   { href: `${home}#projects`, label: t.nav.projects },
-  // El único que no es un ancla de la portada: las notas tienen página propia.
-  { href: localizePath('/notas/', lang), label: t.nav.notes },
   { href: `${home}#about`, label: t.nav.about },
   { href: `${home}#contact`, label: t.nav.contact },
+  // El único que no es un ancla de la portada: las notas tienen página propia.
+  { href: localizePath('/notas/', lang), label: t.nav.notes },
 ]
 
 const social = [
